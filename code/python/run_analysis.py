@@ -1,108 +1,91 @@
-from pathlib import Path
 import pickle
+from pathlib import Path
 
 import pandas as pd
-import statsmodels.formula.api as smf
+from great_tables import GT
 from plotnine import (
     aes,
     element_blank,
+    element_text,
+    geom_line,
     geom_point,
-    geom_smooth,
     ggplot,
     labs,
-    scale_color_manual,
+    scale_x_continuous,
     theme,
     theme_minimal,
 )
 
 
-INPUT_PATH = Path("data/generated/prepared_data.pkl")
-RESULTS_PATH = Path("output/results.pkl")
+def main():
+    Path("output").mkdir(parents=True, exist_ok=True)
 
+    data = pd.read_parquet("data/generated/prepared_data.parquet")
+    annual = pd.read_parquet("data/generated/annual_summary.parquet")
 
-def prepare_descriptive_table(data: pd.DataFrame) -> pd.DataFrame:
-    summary = (
-        data.groupby("transmission", observed=False)
-        .agg(
-            n_cars=("model", "size"),
-            mpg=("mpg", "mean"),
-            hp=("hp", "mean"),
-            wt=("wt", "mean"),
-        )
-        .reset_index()
-    )
-    summary = summary.sort_values("transmission").reset_index(drop=True)
+    annual_table = prepare_annual_table(annual)
 
-    summary[["mpg", "hp", "wt"]] = summary[["mpg", "hp", "wt"]].round(1)
-    summary["transmission"] = summary["transmission"].astype(str)
-
-    return summary.rename(
-        columns={
-            "transmission": "Transmission",
-            "n_cars": "Cars",
-            "mpg": "Mean fuel efficiency (mpg)",
-            "hp": "Mean horsepower",
-            "wt": "Mean weight (1,000 lbs)",
-        }
-    )
-
-
-def make_scatter_figure(data: pd.DataFrame):
-    return (
-        ggplot(data, aes(x="wt", y="mpg", color="transmission"))
-        + geom_point(size=2.6)
-        + geom_smooth(method="lm", se=False, size=0.8, fullrange=True)
-        + scale_color_manual(values={"Automatic": "#1b6ca8", "Manual": "#d95f02"})
-        + labs(
-            x="Vehicle weight (1,000 lbs)",
-            y="Fuel efficiency (miles per gallon)",
-            color="Transmission",
-        )
-        + theme_minimal(base_size=11)
-        + theme(
-            legend_position="top",
-            panel_grid_minor=element_blank(),
-        )
-    )
-
-
-def main() -> None:
-    RESULTS_PATH.parent.mkdir(parents=True, exist_ok=True)
-
-    analysis_data = pd.read_pickle(INPUT_PATH)
-
-    model = smf.ols("mpg ~ wt + C(transmission)", data=analysis_data).fit()
-    descriptive_table = prepare_descriptive_table(analysis_data)
+    first_year = int(annual["filing_year"].min())
+    last_year = int(annual["filing_year"].max())
     highlights = {
-        "sample_size": int(len(analysis_data)),
-        "avg_mpg": round(float(analysis_data["mpg"].mean()), 1),
-        "avg_weight": round(float(analysis_data["wt"].mean()), 2),
-        "avg_horsepower": round(float(analysis_data["hp"].mean()), 1),
-        "weight_slope": round(float(model.params["wt"]), 2),
-        "manual_effect": round(float(model.params["C(transmission)[T.Manual]"]), 2),
-        "fastest_model": str(analysis_data.loc[analysis_data["mpg"].idxmax(), "model"]),
-        "heaviest_model": str(analysis_data.loc[analysis_data["wt"].idxmax(), "model"]),
-        "interpretation": (
-            "The prepared sample suggests a clear negative relationship between "
-            "vehicle weight and fuel efficiency, while the manual cars in this "
-            "small dataset have somewhat higher fuel efficiency after controlling "
-            "for weight."
+        "sample_size": int(len(data)),
+        "year_range": f"{first_year}–{last_year}",
+        "n_firms": int(data["cik_int"].nunique()),
+        "median_words_first": int(
+            annual.loc[annual["filing_year"] == first_year, "median_words"].iloc[0]
+        ),
+        "median_words_last": int(
+            annual.loc[annual["filing_year"] == last_year, "median_words"].iloc[0]
         ),
     }
 
     results = {
-        "descriptive_table": descriptive_table,
-        "analysis_data": analysis_data,
-        "table_note": (
-            "This table summarizes the prepared mtcars sample by transmission type. "
-            "Fuel efficiency is measured in miles per gallon and weight is measured "
-            "in 1,000 pounds."
-        ),
+        "annual_table": annual_table,
+        "annual_data": annual,
         "highlights": highlights,
     }
 
-    with RESULTS_PATH.open("wb") as results_file:
-        pickle.dump(results, results_file)
+    with Path("output/results.pkl").open("wb") as f:
+        pickle.dump(results, f)
+
+
+def make_length_figure(annual_data):
+    return (
+        ggplot(annual_data, aes(x="filing_year", y="median_words"))
+        + geom_line(size=0.8, color="#1b6ca8")
+        + geom_point(size=1.8, color="#1b6ca8")
+        + scale_x_continuous(breaks=[1995, 2000, 2005, 2010, 2015, 2020])
+        + labs(
+            x="Filing year",
+            y="Median word count",
+        )
+        + theme_minimal(base_size=11)
+        + theme(
+            panel_grid_minor=element_blank(),
+            axis_text_x=element_text(rotation=45, hjust=1),
+        )
+    )
+
+
+def prepare_annual_table(annual_data):
+    df = annual_data.copy()
+    df["filing_year"] = df["filing_year"].astype(int)
+    df["n_filings"] = df["n_filings"].apply(lambda x: f"{int(x):,}")
+    df["n_firms"] = df["n_firms"].apply(lambda x: f"{int(x):,}")
+    df["median_words"] = df["median_words"].apply(lambda x: f"{int(x):,}")
+    df["mean_words"] = df["mean_words"].apply(lambda x: f"{int(x):,}")
+    return (
+        GT(df)
+        .cols_label(
+            filing_year="Year",
+            n_filings="Filings",
+            n_firms="Firms",
+            median_words="Median words",
+            mean_words="Mean words",
+        )
+        .cols_align(align="right", columns=["n_filings", "n_firms", "median_words", "mean_words"])
+        .tab_options(table_font_size="12pt", data_row_padding="2.5pt")
+    )
 
 
 if __name__ == "__main__":

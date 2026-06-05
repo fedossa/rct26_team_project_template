@@ -1,14 +1,14 @@
 all: output/paper.pdf output/presentation.pdf
 
-data/pulled/raw_data.pkl: code/python/pull_data.py
+data/pulled/edgar_10k_metadata.parquet: code/python/pull_data.py
 	mkdir -p data/pulled
 	uv run python code/python/pull_data.py
 
-data/generated/prepared_data.pkl: code/python/prep_data.py data/pulled/raw_data.pkl
+data/generated/prepared_data.parquet: code/python/prep_data.py data/pulled/edgar_10k_metadata.parquet
 	mkdir -p data/generated
 	uv run python code/python/prep_data.py
 
-output/results.pkl: code/python/run_analysis.py data/generated/prepared_data.pkl
+output/results.pkl: code/python/run_analysis.py data/generated/prepared_data.parquet
 	mkdir -p output
 	uv run python code/python/run_analysis.py
 
