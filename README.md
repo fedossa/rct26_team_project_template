@@ -9,7 +9,7 @@ The main idea is simple:
 - analysis writes a serialized results bundle to `output/`
 - the paper in `doc/` reads those saved results
 
-So even though the example uses the tiny `mtcars` dataset, the workflow is already organized like a real empirical project.
+The example replicates the 10-K word count trend from Dyer, Lang & Stice-Lawrence (2017) using real EDGAR filing metadata, and extends their sample to 2023.
 
 ## What You Are Looking At
 
@@ -20,9 +20,7 @@ This repository gives you a minimal project skeleton with four visible stages:
 3. `code/python/run_analysis.py`
 4. `doc/paper.qmd`
 
-The point is not the `mtcars` analysis itself. The point is to give you a clean starting structure that you can keep extending for your own work.
-
-If you later look at `trr266/treat`, you will see the same broad movement in a richer and more elaborate form.
+The workflow is organized like a real empirical project. If you later look at `trr266/treat`, you will see the same broad movement in a richer and more elaborate form.
 
 ## Project Structure
 
@@ -43,7 +41,10 @@ data/
   data_readme.md
 doc/
   paper.qmd
+  presentation.qmd
   references.bib
+info/
+  edgar_10k_intro.qmd
 output/
 ```
 
@@ -51,9 +52,9 @@ output/
 
 The workflow is intentionally explicit:
 
-1. `pull_data.py` creates a raw object in `data/pulled/`
-2. `prep_data.py` reads that raw object and creates a prepared analysis dataset in `data/generated/`
-3. `run_analysis.py` reads the prepared dataset and writes a serialized `.pkl` results bundle to `output/`
+1. `pull_data.py` fetches EDGAR 10-K filing metadata from the TRR266 server via DuckDB over HTTPS and writes `data/pulled/edgar_10k_metadata.parquet`
+2. `prep_data.py` deduplicates, filters, and feature-engineers the raw metadata into `data/generated/prepared_data.parquet` and `data/generated/annual_summary.parquet`
+3. `run_analysis.py` reads the prepared data and writes a serialized `.pkl` results bundle to `output/`
 4. `doc/paper.qmd` reads that `.pkl` bundle and renders the paper
 
 The paper does **not** rerun the full analysis pipeline internally. It consumes prepared results from `output/`.
@@ -66,15 +67,13 @@ The `data/` folder keeps the same conceptual separation used in `treat`:
 - `data/pulled/`: raw data written by a pull step
 - `data/generated/`: prepared datasets created from raw or external inputs
 
-In this template, the pull step uses the built-in `mtcars` dataset that ships with `plotnine`, so `data/external/` starts empty. The folder is still there so you can swap in your own real project data later without changing the overall structure.
+## The `info/` Folder
+
+`info/edgar_10k_intro.qmd` is a standalone tutorial that shows how to access and query the EDGAR 10-K dataset directly. It is not part of the analysis pipeline but provides a helpful reference for understanding the data source.
 
 ## References
 
-The paper also includes a minimal bibliography workflow. The bibliography file lives at:
-
-- `doc/references.bib`
-
-and `doc/paper.qmd` cites at least one reference from that file. That way you can already see the basic citation pattern in a working template rather than adding it later from scratch.
+The paper cites Dyer, Lang & Stice-Lawrence (2017) and uses `doc/references.bib` for the bibliography.
 
 ## Recommended Setup Paths
 
@@ -134,7 +133,7 @@ You can also run the project outside containers, but this is **not recommended**
 If you choose this route, run:
 
 ```bash
-uv sync --managed-python
+uv sync
 source .venv/bin/activate
 make
 ```
@@ -153,36 +152,7 @@ The Makefile runs the full pipeline in order:
 2. `code/python/prep_data.py`
 3. `code/python/run_analysis.py`
 4. `doc/paper.qmd`
-
-## Outputs
-
-The main analytical output is:
-
-- `output/rct-project-template-results.pkl`
-
-The final paper is written to:
-
-- `output/rct-project-template-paper.pdf`
-
-That paper imports one saved descriptive table and one saved figure from the results bundle. The analytical objects are prepared first, then rendered in the paper.
-
-## The Paper
-
-The paper source lives in:
-
-- `doc/paper.qmd`
-
-It is formatted as a small article-style paper so the repository already feels like a miniature research template rather than a single script with a report attached at the end.
-The current template shows one descriptive table, one figure, and one bibliography entry so the reporting workflow stays visible without becoming crowded.
-
-## AI Prompts for Common Tasks
-
-Two ready-made prompts are included to help you work with the project configuration using an LLM assistant.
-
-- **`makefile_prompt.md`** — use this if you want to understand how the `Makefile` works or need help adapting it to your own pipeline.
-- **`docker_devcontainer_prompt.md`** — use this if you run into errors with the `.devcontainer/` setup or want to understand how the `Dockerfile` and `devcontainer.json` interact.
-
-In each file, replace the text inside the `{{ }}` blocks with your own input, then paste the whole prompt into an LLM of your choice.
+5. `doc/presentation.qmd`
 
 ## Container Notes
 
@@ -196,4 +166,13 @@ Both Codespaces and the local devcontainer path provide:
 
 In both container paths, `uv` downloads and manages the Python interpreter pinned for the project. This keeps the working environment consistent across students without baking the project Python version into the base image.
 
-To keep the image build lighter, the devcontainer does not preinstall an extra bundle of LaTeX packages. If Quarto reports a missing LaTeX package when rendering `output/rct-project-template-paper.pdf`, install that package on demand with `tlmgr install <package>`.
+To keep the image build lighter, the devcontainer does not preinstall an extra bundle of LaTeX packages. If Quarto reports a missing LaTeX package when rendering the paper, install that package on demand with `tlmgr install <package>`.
+
+## AI Prompts for Common Tasks
+
+Two ready-made prompts are included to help you work with the project configuration using an LLM assistant.
+
+- **`makefile_prompt.md`** — use this if you want to understand how the `Makefile` works or need help adapting it to your own pipeline.
+- **`docker_devcontainer_prompt.md`** — use this if you run into errors with the `.devcontainer/` setup or want to understand how the `Dockerfile` and `devcontainer.json` interact.
+
+In each file, replace the text inside the `{{ }}` blocks with your own input, then paste the whole prompt into an LLM of your choice.
