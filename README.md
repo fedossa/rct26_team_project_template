@@ -7,9 +7,9 @@ The main idea is simple:
 - data are pulled into `data/pulled/`
 - data are prepared into `data/generated/`
 - analysis writes a serialized results bundle to `output/`
-- the paper in `doc/` reads those saved results
+- the presentation slide deck in `doc/` reads those saved results
 
-The example replicates the 10-K word count trend from Dyer, Lang & Stice-Lawrence (2017) using real EDGAR filing metadata, and extends their sample to 2023.
+The example replicates the 10-K word count trend from Dyer, Lang & Stice-Lawrence (2017) using EDGAR filing metadata, and extends their sample to 2023.
 
 ## What You Are Looking At
 
@@ -18,7 +18,7 @@ This repository gives you a minimal project skeleton with four visible stages:
 1. `code/python/pull_data.py`
 2. `code/python/prep_data.py`
 3. `code/python/run_analysis.py`
-4. `doc/paper.qmd`
+4. `doc/presentation.qmd`
 
 The workflow is organized like a real empirical project. If you later look at `trr266/treat`, you will see the same broad movement in a richer and more elaborate form.
 
@@ -40,7 +40,6 @@ data/
   generated/
   data_readme.md
 doc/
-  paper.qmd
   presentation.qmd
   references.bib
 info/
@@ -55,9 +54,9 @@ The workflow is intentionally explicit:
 1. `pull_data.py` fetches EDGAR 10-K filing metadata from the TRR266 server via DuckDB over HTTPS and writes `data/pulled/edgar_10k_metadata.parquet`
 2. `prep_data.py` deduplicates, filters, and feature-engineers the raw metadata into `data/generated/prepared_data.parquet` and `data/generated/annual_summary.parquet`
 3. `run_analysis.py` reads the prepared data and writes a serialized `.pkl` results bundle to `output/`
-4. `doc/paper.qmd` reads that `.pkl` bundle and renders the paper
+4. `doc/presentation.qmd` reads that `.pkl` bundle and renders the beamer slide deck
 
-The paper does **not** rerun the full analysis pipeline internally. It consumes prepared results from `output/`.
+The presentation does **not** rerun the full analysis pipeline internally. It uses prepared results from `output/`.
 
 ## The `data/` Folder
 
@@ -73,7 +72,7 @@ The `data/` folder keeps the same conceptual separation used in `treat`:
 
 ## References
 
-The paper cites Dyer, Lang & Stice-Lawrence (2017) and uses `doc/references.bib` for the bibliography.
+The presentation cites Dyer, Lang & Stice-Lawrence (2017) and uses `doc/references.bib` for the bibliography.
 
 ## Recommended Setup Paths
 
@@ -151,8 +150,7 @@ The Makefile runs the full pipeline in order:
 1. `code/python/pull_data.py`
 2. `code/python/prep_data.py`
 3. `code/python/run_analysis.py`
-4. `doc/paper.qmd`
-5. `doc/presentation.qmd`
+4. `doc/presentation.qmd`
 
 ## Container Notes
 
@@ -165,8 +163,6 @@ Both Codespaces and the local devcontainer path provide:
 - TinyTeX
 
 In both container paths, `uv` downloads and manages the Python interpreter pinned for the project. This keeps the working environment consistent across students without baking the project Python version into the base image.
-
-To keep the image build lighter, the devcontainer does not preinstall an extra bundle of LaTeX packages. If Quarto reports a missing LaTeX package when rendering the paper, install that package on demand with `tlmgr install <package>`.
 
 ## AI Prompts for Common Tasks
 

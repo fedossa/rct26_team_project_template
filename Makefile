@@ -1,4 +1,4 @@
-all: output/paper.pdf output/presentation.pdf
+all: output/presentation.pdf
 
 data/pulled/edgar_10k_metadata.parquet: code/python/pull_data.py
 	mkdir -p data/pulled
@@ -11,11 +11,6 @@ data/generated/prepared_data.parquet: code/python/prep_data.py data/pulled/edgar
 output/results.pkl: code/python/run_analysis.py data/generated/prepared_data.parquet
 	mkdir -p output
 	uv run python code/python/run_analysis.py
-
-output/paper.pdf: doc/paper.qmd output/results.pkl
-	cd doc && uv run quarto render paper.qmd --to pdf --output paper.pdf
-	rm -f doc/paper.tex doc/paper.log doc/paper.aux doc/paper.out doc/paper.knit.md
-	rm -f doc/paper.fff doc/paper.ttt doc/texput.log
 
 output/presentation.pdf: doc/presentation.qmd output/results.pkl
 	cd doc && uv run quarto render presentation.qmd --output presentation.pdf
