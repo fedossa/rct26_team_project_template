@@ -4903,7 +4903,7 @@ WRDS_PASSWORD=your_wrds_password</code></pre>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="ss">f&quot;user=</span><span class="sc">{</span>wrds_user<span class="sc">}</span><span class="ss"> password=</span><span class="sc">{</span>wrds_pass<span class="sc">}</span><span class="ss">&#39; AS wrds (TYPE postgres, READ_ONLY)&quot;</span></span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div id="wrds-connect" class="cell-output cell-output-display" data-execution_count="3">
-<pre><code>&lt;_duckdb.DuckDBPyConnection at 0x7919e828a0f0&gt;</code></pre>
+<pre><code>&lt;_duckdb.DuckDBPyConnection at 0x752b703ebd70&gt;</code></pre>
 </div>
 </div>
 <p>Check it worked. This just asks DuckDB which databases are attached — it returns instantly without touching WRDS. After attaching, WRDS tables are addressed as <code>wrds.&lt;library&gt;.&lt;table&gt;</code>, for example <code>wrds.comp.company</code>.</p>
@@ -5120,7 +5120,7 @@ WRDS_PASSWORD=your_wrds_password</code></pre>
 </div>
 </div>
 <p>We can take a quick look at the data — for instance, how many firm-years there are per decade.</p>
-<div id="cell-comp-funda-counts" class="cell" data-execution_count="7">
+<div id="comp-funda-counts" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>counts_q <span class="op">=</span> <span class="ss">f&#39;&#39;&#39;</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ss">  SELECT CAST(floor(fyear / 10) * 10 AS INTEGER) AS decade, COUNT(*) AS n</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="ss">  FROM wrds.comp.funda</span></span>
@@ -5130,7 +5130,12 @@ WRDS_PASSWORD=your_wrds_password</code></pre>
 <span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="ss">&#39;&#39;&#39;</span></span>
 <span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>con.execute(counts_q).fetchdf()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div id="comp-funda-counts" class="cell-output cell-output-display" data-execution_count="7">
+<div id="comp-funda-counts-1" class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"5ac7b0f43f354217aa09b097d3ed3af9","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div id="comp-funda-counts-2" class="cell-output cell-output-display" data-execution_count="7">
 <div>
 
 
@@ -5464,28 +5469,28 @@ WRDS_PASSWORD=your_wrds_password</code></pre>
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
-<td>317539</td>
-<td>001016</td>
+<td>318580</td>
+<td>001037</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
-<td>352979</td>
-<td>001047</td>
+<td>747435</td>
+<td>001109</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
-<td>3197</td>
-<td>001050</td>
+<td>742808</td>
+<td>001123</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
-<td>1866</td>
-<td>001057</td>
+<td>2457</td>
+<td>001138</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
-<td>764622</td>
-<td>001075</td>
+<td>2467</td>
+<td>001141</td>
 </tr>
 </tbody>
 </table>
@@ -5538,19 +5543,11 @@ WRDS_PASSWORD=your_wrds_password</code></pre>
 <span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a><span class="ss">  FROM parquet_scan(</span><span class="sc">{</span>file_list<span class="sc">}</span><span class="ss">, filename = true, union_by_name = true)</span></span>
 <span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a><span class="ss">&quot;&quot;&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div id="edgar-view" class="cell-output cell-output-display" data-execution_count="12">
-<pre><code>&lt;_duckdb.DuckDBPyConnection at 0x7919e828a0f0&gt;</code></pre>
+<pre><code>&lt;_duckdb.DuckDBPyConnection at 0x752b703ebd70&gt;</code></pre>
 </div>
 </div>
 <p>Now build the linked sample in one SQL join: filings → CIK → GVKEY → PERMNO, requiring the filing date to fall inside the CCM link window.</p>
 <div class="cell" data-layout-align="default">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>flowchart LR</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    E[&quot;10-K filings&lt;br/&gt;(CIK)&lt;br/&gt;&lt;i&gt;text / metadata&lt;/i&gt;&quot;]</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    C[&quot;Compustat&lt;br/&gt;(GVKEY)&lt;br/&gt;&lt;i&gt;financials&lt;/i&gt;&quot;]</span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    R[&quot;CRSP&lt;br/&gt;(PERMNO)&lt;br/&gt;&lt;i&gt;returns&lt;/i&gt;&quot;]</span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    E ---|&quot;cik_gvkey&lt;br/&gt;CIK&quot;| C</span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    C ---|&quot;ccm_link&lt;br/&gt;GVKEY ↔ PERMNO&quot;| R</span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    classDef hub fill:#1b8a8f,stroke:#7cc7ff,color:#ffffff;</span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>    class C hub;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="link-diagram">
 <div>
@@ -5568,22 +5565,22 @@ WRDS_PASSWORD=your_wrds_password</code></pre>
 </div>
 </div>
 <div id="linked-sample" class="cell" data-execution_count="13">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>con.execute(<span class="st">&quot;&quot;&quot;</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="st">  CREATE OR REPLACE TEMP TABLE linked_sample AS</span></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="st">  SELECT e.cik, e.accessionNumber, e.filingDate, g.gvkey, l.permno</span></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="st">  FROM edgar_10k e</span></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="st">  JOIN cik_gvkey g USING (cik)</span></span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="st">  JOIN ccm_link  l</span></span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="st">    ON l.gvkey = g.gvkey</span></span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="st">   AND e.filingDate BETWEEN l.linkdt AND l.linkenddt</span></span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="st">  WHERE e.form = &#39;10-K&#39;</span></span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="st">    AND e.cik IS NOT NULL</span></span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;&quot;&quot;</span>)</span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>con.execute(<span class="st">&quot;SELECT * FROM linked_sample LIMIT 5&quot;</span>).fetchdf()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>con.execute(<span class="st">&quot;&quot;&quot;</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="st">  CREATE OR REPLACE TEMP TABLE linked_sample AS</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="st">  SELECT e.cik, e.accessionNumber, e.filingDate, g.gvkey, l.permno</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="st">  FROM edgar_10k e</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="st">  JOIN cik_gvkey g USING (cik)</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="st">  JOIN ccm_link  l</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="st">    ON l.gvkey = g.gvkey</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="st">   AND e.filingDate BETWEEN l.linkdt AND l.linkenddt</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="st">  WHERE e.form = &#39;10-K&#39;</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="st">    AND e.cik IS NOT NULL</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;&quot;&quot;</span>)</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>con.execute(<span class="st">&quot;SELECT * FROM linked_sample LIMIT 5&quot;</span>).fetchdf()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div id="linked-sample-1" class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"e83adf502afa4783b97754c25803ad7e","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"55f809ea6fc44867ad7995a83fc33beb","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div id="linked-sample-2" class="cell-output cell-output-display" data-execution_count="13">
@@ -5604,43 +5601,43 @@ WRDS_PASSWORD=your_wrds_password</code></pre>
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
-<td>23055</td>
-<td>0000891554-01-503284</td>
-<td>2001-06-29</td>
-<td>003277</td>
-<td>25989.0</td>
+<td>1095315</td>
+<td>0001095315-23-000016</td>
+<td>2023-03-14</td>
+<td>126718</td>
+<td>87510.0</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
-<td>23055</td>
-<td>0000891554-02-004056</td>
-<td>2002-06-28</td>
-<td>003277</td>
-<td>25989.0</td>
+<td>1095315</td>
+<td>0001095315-22-000054</td>
+<td>2022-05-09</td>
+<td>126718</td>
+<td>87510.0</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
-<td>18914</td>
-<td>0000018914-06-000001</td>
-<td>2006-04-03</td>
-<td>002883</td>
-<td>87152.0</td>
+<td>1095315</td>
+<td>0001095315-21-000034</td>
+<td>2021-03-31</td>
+<td>126718</td>
+<td>87510.0</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
-<td>18914</td>
-<td>0000018914-05-000006</td>
-<td>2005-03-31</td>
-<td>002883</td>
-<td>87152.0</td>
+<td>1095315</td>
+<td>0001095315-20-000020</td>
+<td>2020-03-16</td>
+<td>126718</td>
+<td>87510.0</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
-<td>18914</td>
-<td>0000018914-04-000004</td>
-<td>2004-03-30</td>
-<td>002883</td>
-<td>87152.0</td>
+<td>1095315</td>
+<td>0001564590-19-008334</td>
+<td>2019-03-18</td>
+<td>126718</td>
+<td>87510.0</td>
 </tr>
 </tbody>
 </table>
@@ -5650,16 +5647,16 @@ WRDS_PASSWORD=your_wrds_password</code></pre>
 </div>
 <p>Report how many filings made it through. Filings that drop out (no current CIK match, foreign issuers, timing gaps) are worth reporting.</p>
 <div id="cell-match-rate" class="cell" data-execution_count="14">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>counts <span class="op">=</span> con.execute(<span class="st">&quot;&quot;&quot;</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="st">  SELECT</span></span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="st">    (SELECT COUNT(*) FROM edgar_10k</span></span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="st">       WHERE form = &#39;10-K&#39; AND cik IS NOT NULL)         AS n_filings,</span></span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="st">    (SELECT COUNT(*) FROM linked_sample)                AS n_with_permno</span></span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;&quot;&quot;</span>).fetchdf()</span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>counts.assign(</span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>    pct_linked<span class="op">=</span>(<span class="dv">100</span> <span class="op">*</span> counts[<span class="st">&quot;n_with_permno&quot;</span>] <span class="op">/</span> counts[<span class="st">&quot;n_filings&quot;</span>]).<span class="bu">round</span>(<span class="dv">1</span>)</span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>counts <span class="op">=</span> con.execute(<span class="st">&quot;&quot;&quot;</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="st">  SELECT</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="st">    (SELECT COUNT(*) FROM edgar_10k</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="st">       WHERE form = &#39;10-K&#39; AND cik IS NOT NULL)         AS n_filings,</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="st">    (SELECT COUNT(*) FROM linked_sample)                AS n_with_permno</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;&quot;&quot;</span>).fetchdf()</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>counts.assign(</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    pct_linked<span class="op">=</span>(<span class="dv">100</span> <span class="op">*</span> counts[<span class="st">&quot;n_with_permno&quot;</span>] <span class="op">/</span> counts[<span class="st">&quot;n_filings&quot;</span>]).<span class="bu">round</span>(<span class="dv">1</span>)</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div id="match-rate" class="cell-output cell-output-display" data-execution_count="14">
 <div>
 
@@ -5698,7 +5695,7 @@ WRDS_PASSWORD=your_wrds_password</code></pre>
 </main>
 <!-- /main column -->
 <script type="application/vnd.jupyter.widget-state+json">
-{"state":{"256c13d694154381bc81816110a002be":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"ProgressStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"ProgressStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","bar_color":"black","description_width":""}},"a57148da70654f2abc0358fa2041f403":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":"auto"}},"e83adf502afa4783b97754c25803ad7e":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"FloatProgressModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"FloatProgressModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"ProgressView","bar_style":"","description":"","description_allow_html":false,"layout":"IPY_MODEL_a57148da70654f2abc0358fa2041f403","max":100,"min":0,"orientation":"horizontal","style":"IPY_MODEL_256c13d694154381bc81816110a002be","tabbable":null,"tooltip":null,"value":100}}},"version_major":2,"version_minor":0}
+{"state":{"3a3dad89343b41029ad13e81009d9a87":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"ProgressStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"ProgressStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","bar_color":"black","description_width":""}},"55f809ea6fc44867ad7995a83fc33beb":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"FloatProgressModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"FloatProgressModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"ProgressView","bar_style":"","description":"","description_allow_html":false,"layout":"IPY_MODEL_e48c523358b341e5b575ac99c76efe2e","max":100,"min":0,"orientation":"horizontal","style":"IPY_MODEL_3a3dad89343b41029ad13e81009d9a87","tabbable":null,"tooltip":null,"value":100}},"5ac7b0f43f354217aa09b097d3ed3af9":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"FloatProgressModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"FloatProgressModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"ProgressView","bar_style":"","description":"","description_allow_html":false,"layout":"IPY_MODEL_bbcdcad258be44a9ad2714054e080397","max":100,"min":0,"orientation":"horizontal","style":"IPY_MODEL_67e067c43d024216bd4ccb641b42ac78","tabbable":null,"tooltip":null,"value":100}},"67e067c43d024216bd4ccb641b42ac78":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"ProgressStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"ProgressStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","bar_color":"black","description_width":""}},"bbcdcad258be44a9ad2714054e080397":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":"auto"}},"e48c523358b341e5b575ac99c76efe2e":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":"auto"}}},"version_major":2,"version_minor":0}
 </script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
@@ -6150,462 +6147,463 @@ WRDS_PASSWORD=your_wrds_password</code></pre>
     }
   });
   </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class>
-<div class="sourceCode" id="cb19" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> &quot;WRDS: Compustat, CRSP, and Linking to 10-K Filings&quot;</span></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="an">subtitle:</span><span class="co"> &quot;Research in Corporate Transparency 2026&quot;</span></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> &quot;Fikir Worku Edossa&quot;</span></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span></span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="co">    toc: true</span></span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="co">    toc-depth: 3</span></span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="co">    toc-location: left</span></span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="co">    number-sections: true</span></span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="co">    code-fold: false</span></span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="co">    code-tools: true</span></span>
-<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="co">    theme: darkly</span></span>
-<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a><span class="co">    embed-resources: true</span></span>
-<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a><span class="co">    df-print: paged</span></span>
-<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a><span class="co">    mermaid:</span></span>
-<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a><span class="co">      theme: dark</span></span>
-<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a><span class="an">execute:</span></span>
-<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a><span class="co">  echo: true</span></span>
-<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a><span class="co">  eval: true</span></span>
-<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a><span class="co">  warning: false</span></span>
-<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a><span class="co">  message: false</span></span>
-<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">style</span><span class="dt">&gt;</span></span>
-<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a><span class="in">:root</span> {</span>
-<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a>  <span class="kw">color-scheme</span><span class="ch">:</span> <span class="dv">dark</span><span class="op">;</span></span>
-<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a>body<span class="op">,</span></span>
-<span id="cb19-30"><a href="#cb19-30" aria-hidden="true" tabindex="-1"></a><span class="fu">.quarto-container</span><span class="op">,</span></span>
-<span id="cb19-31"><a href="#cb19-31" aria-hidden="true" tabindex="-1"></a><span class="pp">#quarto-content</span><span class="op">,</span></span>
-<span id="cb19-32"><a href="#cb19-32" aria-hidden="true" tabindex="-1"></a>main<span class="fu">.content</span> {</span>
-<span id="cb19-33"><a href="#cb19-33" aria-hidden="true" tabindex="-1"></a>  <span class="kw">background</span><span class="ch">:</span> <span class="cn">#050608</span> <span class="at">!important</span><span class="op">;</span></span>
-<span id="cb19-34"><a href="#cb19-34" aria-hidden="true" tabindex="-1"></a>  <span class="kw">color</span><span class="ch">:</span> <span class="cn">#e8edf2</span> <span class="at">!important</span><span class="op">;</span></span>
-<span id="cb19-35"><a href="#cb19-35" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb19-36"><a href="#cb19-36" aria-hidden="true" tabindex="-1"></a>a { <span class="kw">color</span><span class="ch">:</span> <span class="cn">#7cc7ff</span><span class="op">;</span> }</span>
-<span id="cb19-37"><a href="#cb19-37" aria-hidden="true" tabindex="-1"></a>a<span class="in">:hover</span> { <span class="kw">color</span><span class="ch">:</span> <span class="cn">#a9dcff</span><span class="op">;</span> }</span>
-<span id="cb19-38"><a href="#cb19-38" aria-hidden="true" tabindex="-1"></a><span class="fu">.quarto-title-block</span> <span class="fu">.subtitle</span> { <span class="kw">font-size</span><span class="ch">:</span> <span class="dv">1.25</span><span class="dt">rem</span><span class="op">;</span> }</span>
-<span id="cb19-39"><a href="#cb19-39" aria-hidden="true" tabindex="-1"></a><span class="fu">.sidebar</span><span class="op">,</span></span>
-<span id="cb19-40"><a href="#cb19-40" aria-hidden="true" tabindex="-1"></a><span class="pp">#quarto-sidebar</span><span class="op">,</span></span>
-<span id="cb19-41"><a href="#cb19-41" aria-hidden="true" tabindex="-1"></a><span class="fu">.sidebar-navigation</span><span class="op">,</span></span>
-<span id="cb19-42"><a href="#cb19-42" aria-hidden="true" tabindex="-1"></a><span class="fu">.sidebar</span> nav<span class="ex">[</span><span class="ss">role</span><span class="op">=</span><span class="st">&quot;doc-toc&quot;</span><span class="ex">]</span> {</span>
-<span id="cb19-43"><a href="#cb19-43" aria-hidden="true" tabindex="-1"></a>  <span class="kw">background</span><span class="ch">:</span> <span class="cn">#080a0f</span> <span class="at">!important</span><span class="op">;</span></span>
-<span id="cb19-44"><a href="#cb19-44" aria-hidden="true" tabindex="-1"></a>  <span class="kw">color</span><span class="ch">:</span> <span class="cn">#d8dee9</span> <span class="at">!important</span><span class="op">;</span></span>
-<span id="cb19-45"><a href="#cb19-45" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb19-46"><a href="#cb19-46" aria-hidden="true" tabindex="-1"></a><span class="fu">.warning-card</span> {</span>
-<span id="cb19-47"><a href="#cb19-47" aria-hidden="true" tabindex="-1"></a>  <span class="kw">border-left</span><span class="ch">:</span> <span class="dv">5</span><span class="dt">px</span> <span class="dv">solid</span> <span class="cn">#ff6b6b</span><span class="op">;</span></span>
-<span id="cb19-48"><a href="#cb19-48" aria-hidden="true" tabindex="-1"></a>  <span class="kw">background</span><span class="ch">:</span> <span class="cn">#211014</span><span class="op">;</span></span>
-<span id="cb19-49"><a href="#cb19-49" aria-hidden="true" tabindex="-1"></a>  <span class="kw">color</span><span class="ch">:</span> <span class="cn">#f5d8dc</span><span class="op">;</span></span>
-<span id="cb19-50"><a href="#cb19-50" aria-hidden="true" tabindex="-1"></a>  <span class="kw">padding</span><span class="ch">:</span> <span class="dv">1</span><span class="dt">rem</span> <span class="dv">1.25</span><span class="dt">rem</span><span class="op">;</span></span>
-<span id="cb19-51"><a href="#cb19-51" aria-hidden="true" tabindex="-1"></a>  <span class="kw">margin</span><span class="ch">:</span> <span class="dv">1</span><span class="dt">rem</span> <span class="dv">0</span><span class="op">;</span></span>
-<span id="cb19-52"><a href="#cb19-52" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb19-53"><a href="#cb19-53" aria-hidden="true" tabindex="-1"></a><span class="fu">.info-card</span> {</span>
-<span id="cb19-54"><a href="#cb19-54" aria-hidden="true" tabindex="-1"></a>  <span class="kw">border-left</span><span class="ch">:</span> <span class="dv">5</span><span class="dt">px</span> <span class="dv">solid</span> <span class="cn">#7cc7ff</span><span class="op">;</span></span>
-<span id="cb19-55"><a href="#cb19-55" aria-hidden="true" tabindex="-1"></a>  <span class="kw">background</span><span class="ch">:</span> <span class="cn">#0d1722</span><span class="op">;</span></span>
-<span id="cb19-56"><a href="#cb19-56" aria-hidden="true" tabindex="-1"></a>  <span class="kw">color</span><span class="ch">:</span> <span class="cn">#d6e8f7</span><span class="op">;</span></span>
-<span id="cb19-57"><a href="#cb19-57" aria-hidden="true" tabindex="-1"></a>  <span class="kw">padding</span><span class="ch">:</span> <span class="dv">1</span><span class="dt">rem</span> <span class="dv">1.25</span><span class="dt">rem</span><span class="op">;</span></span>
-<span id="cb19-58"><a href="#cb19-58" aria-hidden="true" tabindex="-1"></a>  <span class="kw">margin</span><span class="ch">:</span> <span class="dv">1</span><span class="dt">rem</span> <span class="dv">0</span><span class="op">;</span></span>
-<span id="cb19-59"><a href="#cb19-59" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb19-60"><a href="#cb19-60" aria-hidden="true" tabindex="-1"></a><span class="fu">.teacher-note</span> {</span>
-<span id="cb19-61"><a href="#cb19-61" aria-hidden="true" tabindex="-1"></a>  <span class="kw">border-left</span><span class="ch">:</span> <span class="dv">5</span><span class="dt">px</span> <span class="dv">solid</span> <span class="cn">#f5c451</span><span class="op">;</span></span>
-<span id="cb19-62"><a href="#cb19-62" aria-hidden="true" tabindex="-1"></a>  <span class="kw">background</span><span class="ch">:</span> <span class="cn">#1c1708</span><span class="op">;</span></span>
-<span id="cb19-63"><a href="#cb19-63" aria-hidden="true" tabindex="-1"></a>  <span class="kw">color</span><span class="ch">:</span> <span class="cn">#f0e2bd</span><span class="op">;</span></span>
-<span id="cb19-64"><a href="#cb19-64" aria-hidden="true" tabindex="-1"></a>  <span class="kw">padding</span><span class="ch">:</span> <span class="dv">0.85</span><span class="dt">rem</span> <span class="dv">1.15</span><span class="dt">rem</span><span class="op">;</span></span>
-<span id="cb19-65"><a href="#cb19-65" aria-hidden="true" tabindex="-1"></a>  <span class="kw">margin</span><span class="ch">:</span> <span class="dv">0.75</span><span class="dt">rem</span> <span class="dv">0</span> <span class="dv">1.5</span><span class="dt">rem</span> <span class="dv">0</span><span class="op">;</span></span>
-<span id="cb19-66"><a href="#cb19-66" aria-hidden="true" tabindex="-1"></a>  <span class="kw">font-size</span><span class="ch">:</span> <span class="dv">0.92</span><span class="dt">rem</span><span class="op">;</span></span>
-<span id="cb19-67"><a href="#cb19-67" aria-hidden="true" tabindex="-1"></a>  <span class="kw">border-radius</span><span class="ch">:</span> <span class="dv">0</span> <span class="dv">4</span><span class="dt">px</span> <span class="dv">4</span><span class="dt">px</span> <span class="dv">0</span><span class="op">;</span></span>
-<span id="cb19-68"><a href="#cb19-68" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb19-69"><a href="#cb19-69" aria-hidden="true" tabindex="-1"></a><span class="fu">.teacher-note</span> p { <span class="kw">margin</span><span class="ch">:</span> <span class="dv">0.35</span><span class="dt">rem</span> <span class="dv">0</span><span class="op">;</span> }</span>
-<span id="cb19-70"><a href="#cb19-70" aria-hidden="true" tabindex="-1"></a><span class="fu">.teacher-note</span> blockquote {</span>
-<span id="cb19-71"><a href="#cb19-71" aria-hidden="true" tabindex="-1"></a>  <span class="kw">border-left</span><span class="ch">:</span> <span class="dv">3</span><span class="dt">px</span> <span class="dv">solid</span> <span class="cn">#8a7320</span><span class="op">;</span></span>
-<span id="cb19-72"><a href="#cb19-72" aria-hidden="true" tabindex="-1"></a>  <span class="kw">margin</span><span class="ch">:</span> <span class="dv">0.4</span><span class="dt">rem</span> <span class="dv">0</span> <span class="dv">0.4</span><span class="dt">rem</span> <span class="dv">0.2</span><span class="dt">rem</span><span class="op">;</span></span>
-<span id="cb19-73"><a href="#cb19-73" aria-hidden="true" tabindex="-1"></a>  <span class="kw">padding</span><span class="ch">:</span> <span class="dv">0.1</span><span class="dt">rem</span> <span class="dv">0</span> <span class="dv">0.1</span><span class="dt">rem</span> <span class="dv">0.8</span><span class="dt">rem</span><span class="op">;</span></span>
-<span id="cb19-74"><a href="#cb19-74" aria-hidden="true" tabindex="-1"></a>  <span class="kw">color</span><span class="ch">:</span> <span class="cn">#ffe9a8</span><span class="op">;</span></span>
-<span id="cb19-75"><a href="#cb19-75" aria-hidden="true" tabindex="-1"></a>  <span class="kw">font-style</span><span class="ch">:</span> <span class="dv">italic</span><span class="op">;</span></span>
-<span id="cb19-76"><a href="#cb19-76" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb19-77"><a href="#cb19-77" aria-hidden="true" tabindex="-1"></a><span class="fu">.teacher-note</span> <span class="fu">.tn-head</span> {</span>
-<span id="cb19-78"><a href="#cb19-78" aria-hidden="true" tabindex="-1"></a>  <span class="kw">text-transform</span><span class="ch">:</span> <span class="dv">uppercase</span><span class="op">;</span></span>
-<span id="cb19-79"><a href="#cb19-79" aria-hidden="true" tabindex="-1"></a>  <span class="kw">letter-spacing</span><span class="ch">:</span> <span class="dv">0.08</span><span class="dt">em</span><span class="op">;</span></span>
-<span id="cb19-80"><a href="#cb19-80" aria-hidden="true" tabindex="-1"></a>  <span class="kw">font-weight</span><span class="ch">:</span> <span class="dv">700</span><span class="op">;</span></span>
-<span id="cb19-81"><a href="#cb19-81" aria-hidden="true" tabindex="-1"></a>  <span class="kw">color</span><span class="ch">:</span> <span class="cn">#f5c451</span><span class="op">;</span></span>
-<span id="cb19-82"><a href="#cb19-82" aria-hidden="true" tabindex="-1"></a>  <span class="kw">font-size</span><span class="ch">:</span> <span class="dv">0.78</span><span class="dt">rem</span><span class="op">;</span></span>
-<span id="cb19-83"><a href="#cb19-83" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb19-84"><a href="#cb19-84" aria-hidden="true" tabindex="-1"></a><span class="fu">.table-note</span> {</span>
-<span id="cb19-85"><a href="#cb19-85" aria-hidden="true" tabindex="-1"></a>  <span class="kw">color</span><span class="ch">:</span> <span class="cn">#b8c0cc</span><span class="op">;</span></span>
-<span id="cb19-86"><a href="#cb19-86" aria-hidden="true" tabindex="-1"></a>  <span class="kw">font-size</span><span class="ch">:</span> <span class="dv">0.9</span><span class="dt">rem</span><span class="op">;</span></span>
-<span id="cb19-87"><a href="#cb19-87" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb19-88"><a href="#cb19-88" aria-hidden="true" tabindex="-1"></a><span class="fu">.dataframe</span> { <span class="kw">width</span><span class="ch">:</span> <span class="dv">100</span><span class="dt">%</span><span class="op">;</span> }</span>
-<span id="cb19-89"><a href="#cb19-89" aria-hidden="true" tabindex="-1"></a><span class="fu">.cell-output-display</span> { <span class="kw">overflow-x</span><span class="ch">:</span> <span class="bu">auto</span><span class="op">;</span> }</span>
-<span id="cb19-90"><a href="#cb19-90" aria-hidden="true" tabindex="-1"></a><span class="fu">.table</span><span class="op">,</span></span>
-<span id="cb19-91"><a href="#cb19-91" aria-hidden="true" tabindex="-1"></a>table<span class="op">,</span></span>
-<span id="cb19-92"><a href="#cb19-92" aria-hidden="true" tabindex="-1"></a><span class="fu">.dataframe</span> {</span>
-<span id="cb19-93"><a href="#cb19-93" aria-hidden="true" tabindex="-1"></a>  <span class="va">--bs-table-bg</span><span class="ch">:</span> <span class="cn">#10131a</span><span class="op">;</span></span>
-<span id="cb19-94"><a href="#cb19-94" aria-hidden="true" tabindex="-1"></a>  <span class="va">--bs-table-color</span><span class="ch">:</span> <span class="cn">#e8edf2</span><span class="op">;</span></span>
-<span id="cb19-95"><a href="#cb19-95" aria-hidden="true" tabindex="-1"></a>  <span class="va">--bs-table-striped-bg</span><span class="ch">:</span> <span class="cn">#151a23</span><span class="op">;</span></span>
-<span id="cb19-96"><a href="#cb19-96" aria-hidden="true" tabindex="-1"></a>  <span class="va">--bs-table-striped-color</span><span class="ch">:</span> <span class="cn">#e8edf2</span><span class="op">;</span></span>
-<span id="cb19-97"><a href="#cb19-97" aria-hidden="true" tabindex="-1"></a>  <span class="va">--bs-table-hover-bg</span><span class="ch">:</span> <span class="cn">#1b2230</span><span class="op">;</span></span>
-<span id="cb19-98"><a href="#cb19-98" aria-hidden="true" tabindex="-1"></a>  <span class="kw">color</span><span class="ch">:</span> <span class="cn">#e8edf2</span> <span class="at">!important</span><span class="op">;</span></span>
-<span id="cb19-99"><a href="#cb19-99" aria-hidden="true" tabindex="-1"></a>  <span class="kw">border-color</span><span class="ch">:</span> <span class="cn">#303746</span> <span class="at">!important</span><span class="op">;</span></span>
-<span id="cb19-100"><a href="#cb19-100" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb19-101"><a href="#cb19-101" aria-hidden="true" tabindex="-1"></a>thead<span class="op">,</span></span>
-<span id="cb19-102"><a href="#cb19-102" aria-hidden="true" tabindex="-1"></a>th {</span>
-<span id="cb19-103"><a href="#cb19-103" aria-hidden="true" tabindex="-1"></a>  <span class="kw">background</span><span class="ch">:</span> <span class="cn">#182030</span> <span class="at">!important</span><span class="op">;</span></span>
-<span id="cb19-104"><a href="#cb19-104" aria-hidden="true" tabindex="-1"></a>  <span class="kw">color</span><span class="ch">:</span> <span class="cn">#f2f6fb</span> <span class="at">!important</span><span class="op">;</span></span>
-<span id="cb19-105"><a href="#cb19-105" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb19-106"><a href="#cb19-106" aria-hidden="true" tabindex="-1"></a>td {</span>
-<span id="cb19-107"><a href="#cb19-107" aria-hidden="true" tabindex="-1"></a>  <span class="kw">color</span><span class="ch">:</span> <span class="cn">#e8edf2</span> <span class="at">!important</span><span class="op">;</span></span>
-<span id="cb19-108"><a href="#cb19-108" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb19-109"><a href="#cb19-109" aria-hidden="true" tabindex="-1"></a>pre<span class="op">,</span></span>
-<span id="cb19-110"><a href="#cb19-110" aria-hidden="true" tabindex="-1"></a>code<span class="op">,</span></span>
-<span id="cb19-111"><a href="#cb19-111" aria-hidden="true" tabindex="-1"></a><span class="fu">.sourceCode</span> {</span>
-<span id="cb19-112"><a href="#cb19-112" aria-hidden="true" tabindex="-1"></a>  <span class="kw">background-color</span><span class="ch">:</span> <span class="cn">#0d1117</span> <span class="at">!important</span><span class="op">;</span></span>
-<span id="cb19-113"><a href="#cb19-113" aria-hidden="true" tabindex="-1"></a>  <span class="kw">color</span><span class="ch">:</span> <span class="cn">#e6edf3</span> <span class="at">!important</span><span class="op">;</span></span>
-<span id="cb19-114"><a href="#cb19-114" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb19-115"><a href="#cb19-115" aria-hidden="true" tabindex="-1"></a><span class="fu">.diagram-block</span> {</span>
-<span id="cb19-116"><a href="#cb19-116" aria-hidden="true" tabindex="-1"></a>  <span class="kw">white-space</span><span class="ch">:</span> <span class="dv">pre</span><span class="op">;</span></span>
-<span id="cb19-117"><a href="#cb19-117" aria-hidden="true" tabindex="-1"></a>  <span class="kw">overflow-x</span><span class="ch">:</span> <span class="bu">auto</span><span class="op">;</span></span>
-<span id="cb19-118"><a href="#cb19-118" aria-hidden="true" tabindex="-1"></a>  <span class="kw">background</span><span class="ch">:</span> <span class="cn">#0d1117</span><span class="op">;</span></span>
-<span id="cb19-119"><a href="#cb19-119" aria-hidden="true" tabindex="-1"></a>  <span class="kw">color</span><span class="ch">:</span> <span class="cn">#9ad1ff</span><span class="op">;</span></span>
-<span id="cb19-120"><a href="#cb19-120" aria-hidden="true" tabindex="-1"></a>  <span class="kw">border</span><span class="ch">:</span> <span class="dv">1</span><span class="dt">px</span> <span class="dv">solid</span> <span class="cn">#30363d</span><span class="op">;</span></span>
-<span id="cb19-121"><a href="#cb19-121" aria-hidden="true" tabindex="-1"></a>  <span class="kw">border-radius</span><span class="ch">:</span> <span class="dv">4</span><span class="dt">px</span><span class="op">;</span></span>
-<span id="cb19-122"><a href="#cb19-122" aria-hidden="true" tabindex="-1"></a>  <span class="kw">padding</span><span class="ch">:</span> <span class="dv">1</span><span class="dt">rem</span><span class="op">;</span></span>
-<span id="cb19-123"><a href="#cb19-123" aria-hidden="true" tabindex="-1"></a>  <span class="kw">font-family</span><span class="ch">:</span> <span class="dv">ui-monospace</span><span class="op">,</span> <span class="dv">SFMono-Regular</span><span class="op">,</span> <span class="dv">Menlo</span><span class="op">,</span> <span class="dv">Consolas</span><span class="op">,</span> <span class="st">&quot;Liberation Mono&quot;</span><span class="op">,</span> <span class="dv">monospace</span><span class="op">;</span></span>
-<span id="cb19-124"><a href="#cb19-124" aria-hidden="true" tabindex="-1"></a>  <span class="kw">font-size</span><span class="ch">:</span> <span class="dv">0.9</span><span class="dt">rem</span><span class="op">;</span></span>
-<span id="cb19-125"><a href="#cb19-125" aria-hidden="true" tabindex="-1"></a>  <span class="kw">line-height</span><span class="ch">:</span> <span class="dv">1.45</span><span class="op">;</span></span>
-<span id="cb19-126"><a href="#cb19-126" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb19-127"><a href="#cb19-127" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">style</span><span class="dt">&gt;</span></span>
-<span id="cb19-128"><a href="#cb19-128" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-129"><a href="#cb19-129" aria-hidden="true" tabindex="-1"></a><span class="fu">## What this session covers</span></span>
-<span id="cb19-130"><a href="#cb19-130" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-131"><a href="#cb19-131" aria-hidden="true" tabindex="-1"></a>By the end of this notebook you will be able to pull two of the most-used datasets in</span>
-<span id="cb19-132"><a href="#cb19-132" aria-hidden="true" tabindex="-1"></a>accounting research from WRDS with code, and join them to the 10-K filings you already met:</span>
-<span id="cb19-133"><a href="#cb19-133" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-134"><a href="#cb19-134" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Compustat** (<span class="in">`comp`</span> library): yearly and quarterly numbers from financial statements (we use the annual data here).</span>
-<span id="cb19-135"><a href="#cb19-135" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**CRSP** (<span class="in">`crsp`</span> library): daily and monthly share prices, returns, and volume.</span>
-<span id="cb19-136"><a href="#cb19-136" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-137"><a href="#cb19-137" aria-hidden="true" tabindex="-1"></a>Your team project can lean on four data sources — the prepared **10-K filings**, the</span>
-<span id="cb19-138"><a href="#cb19-138" aria-hidden="true" tabindex="-1"></a>**EDGAR log files**, **Compustat**, and **CRSP**. This session is about the last two, and</span>
-<span id="cb19-139"><a href="#cb19-139" aria-hidden="true" tabindex="-1"></a>about getting all three into one data frame so you can attach financial controls and market reactions to a filing.</span>
-<span id="cb19-140"><a href="#cb19-140" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-141"><a href="#cb19-141" aria-hidden="true" tabindex="-1"></a><span class="fu">## Connecting to WRDS</span></span>
-<span id="cb19-142"><a href="#cb19-142" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-143"><a href="#cb19-143" aria-hidden="true" tabindex="-1"></a>WRDS hosts Compustat and CRSP on a PostgreSQL database. So we open a local **DuckDB** database and *attach* WRDS to it. DuckDB then becomes our single engine: it can read the remote WRDS tables, read the EDGAR parquet files, and join across them. Load the packages first.</span>
-<span id="cb19-144"><a href="#cb19-144" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-147"><a href="#cb19-147" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb19-148"><a href="#cb19-148" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: packages</span></span>
-<span id="cb19-149"><a href="#cb19-149" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
-<span id="cb19-150"><a href="#cb19-150" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-151"><a href="#cb19-151" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> duckdb</span>
-<span id="cb19-152"><a href="#cb19-152" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb19-153"><a href="#cb19-153" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
-<span id="cb19-154"><a href="#cb19-154" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> bs4 <span class="im">import</span> BeautifulSoup</span>
-<span id="cb19-155"><a href="#cb19-155" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dotenv <span class="im">import</span> load_dotenv</span>
-<span id="cb19-156"><a href="#cb19-156" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-157"><a href="#cb19-157" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-158"><a href="#cb19-158" aria-hidden="true" tabindex="-1"></a><span class="fu">### Your credentials</span></span>
-<span id="cb19-159"><a href="#cb19-159" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-160"><a href="#cb19-160" aria-hidden="true" tabindex="-1"></a>Keep it in a <span class="in">`secrets.env`</span> file in the project root with two lines:</span>
-<span id="cb19-161"><a href="#cb19-161" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-162"><a href="#cb19-162" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-163"><a href="#cb19-163" aria-hidden="true" tabindex="-1"></a><span class="in">WRDS_USERNAME=your_wrds_id</span></span>
-<span id="cb19-164"><a href="#cb19-164" aria-hidden="true" tabindex="-1"></a><span class="in">WRDS_PASSWORD=your_wrds_password</span></span>
-<span id="cb19-165"><a href="#cb19-165" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-166"><a href="#cb19-166" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-167"><a href="#cb19-167" aria-hidden="true" tabindex="-1"></a>The repo ships <span class="in">`_secrets.env`</span> as an empty template — copy it to <span class="in">`secrets.env`</span> and fill in</span>
-<span id="cb19-168"><a href="#cb19-168" aria-hidden="true" tabindex="-1"></a>your details. <span class="in">`secrets.env`</span> is in <span class="in">`.gitignore`</span>, so git will not commit it. We read it with</span>
-<span id="cb19-169"><a href="#cb19-169" aria-hidden="true" tabindex="-1"></a><span class="in">`python-dotenv`</span>.</span>
-<span id="cb19-170"><a href="#cb19-170" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-173"><a href="#cb19-173" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb19-174"><a href="#cb19-174" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: load-secrets</span></span>
-<span id="cb19-175"><a href="#cb19-175" aria-hidden="true" tabindex="-1"></a>load_dotenv(<span class="st">&quot;../secrets.env&quot;</span>)</span>
-<span id="cb19-176"><a href="#cb19-176" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-177"><a href="#cb19-177" aria-hidden="true" tabindex="-1"></a>wrds_user <span class="op">=</span> os.getenv(<span class="st">&quot;WRDS_USERNAME&quot;</span>)</span>
-<span id="cb19-178"><a href="#cb19-178" aria-hidden="true" tabindex="-1"></a>wrds_pass <span class="op">=</span> os.getenv(<span class="st">&quot;WRDS_PASSWORD&quot;</span>)</span>
-<span id="cb19-179"><a href="#cb19-179" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-180"><a href="#cb19-180" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> wrds_user <span class="kw">and</span> wrds_pass, <span class="st">&quot;Set WRDS_USERNAME and WRDS_PASSWORD in secrets.env&quot;</span></span>
-<span id="cb19-181"><a href="#cb19-181" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-182"><a href="#cb19-182" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-183"><a href="#cb19-183" aria-hidden="true" tabindex="-1"></a><span class="fu">### Open DuckDB and attach WRDS</span></span>
-<span id="cb19-184"><a href="#cb19-184" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-187"><a href="#cb19-187" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb19-188"><a href="#cb19-188" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: wrds-connect</span></span>
-<span id="cb19-189"><a href="#cb19-189" aria-hidden="true" tabindex="-1"></a>con <span class="op">=</span> duckdb.<span class="ex">connect</span>()</span>
-<span id="cb19-190"><a href="#cb19-190" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-191"><a href="#cb19-191" aria-hidden="true" tabindex="-1"></a>con.execute(<span class="st">&quot;INSTALL postgres;&quot;</span>)</span>
-<span id="cb19-192"><a href="#cb19-192" aria-hidden="true" tabindex="-1"></a>con.execute(<span class="st">&quot;LOAD postgres;&quot;</span>)</span>
-<span id="cb19-193"><a href="#cb19-193" aria-hidden="true" tabindex="-1"></a>con.execute(<span class="st">&quot;SET pg_connection_limit=4;&quot;</span>)</span>
-<span id="cb19-194"><a href="#cb19-194" aria-hidden="true" tabindex="-1"></a>con.execute(</span>
-<span id="cb19-195"><a href="#cb19-195" aria-hidden="true" tabindex="-1"></a>    <span class="ss">f&quot;ATTACH &#39;dbname=wrds host=wrds-pgdata.wharton.upenn.edu port=9737 &quot;</span></span>
-<span id="cb19-196"><a href="#cb19-196" aria-hidden="true" tabindex="-1"></a>    <span class="ss">f&quot;user=</span><span class="sc">{</span>wrds_user<span class="sc">}</span><span class="ss"> password=</span><span class="sc">{</span>wrds_pass<span class="sc">}</span><span class="ss">&#39; AS wrds (TYPE postgres, READ_ONLY)&quot;</span></span>
-<span id="cb19-197"><a href="#cb19-197" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb19-198"><a href="#cb19-198" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-199"><a href="#cb19-199" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-200"><a href="#cb19-200" aria-hidden="true" tabindex="-1"></a>Check it worked. This just asks DuckDB which databases are attached — it returns instantly without touching WRDS. After attaching, WRDS tables are addressed as <span class="in">`wrds.&lt;library&gt;.&lt;table&gt;`</span>, for example <span class="in">`wrds.comp.company`</span>.</span>
-<span id="cb19-201"><a href="#cb19-201" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-204"><a href="#cb19-204" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb19-205"><a href="#cb19-205" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: wrds-check</span></span>
-<span id="cb19-206"><a href="#cb19-206" aria-hidden="true" tabindex="-1"></a>con.execute(</span>
-<span id="cb19-207"><a href="#cb19-207" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;SELECT database_name FROM duckdb_databases() WHERE database_name = &#39;wrds&#39;&quot;</span></span>
-<span id="cb19-208"><a href="#cb19-208" aria-hidden="true" tabindex="-1"></a>).fetchdf()</span>
-<span id="cb19-209"><a href="#cb19-209" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-210"><a href="#cb19-210" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-211"><a href="#cb19-211" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> class</span><span class="op">=</span><span class="st">&quot;info-card&quot;</span><span class="dt">&gt;</span></span>
-<span id="cb19-212"><a href="#cb19-212" aria-hidden="true" tabindex="-1"></a>To see what&#39;s available on WRDS, the command <span class="dt">&lt;</span><span class="kw">code</span><span class="dt">&gt;</span>SHOW ALL TABLES<span class="dt">&lt;/</span><span class="kw">code</span><span class="dt">&gt;</span> lists every</span>
-<span id="cb19-213"><a href="#cb19-213" aria-hidden="true" tabindex="-1"></a>library and table (it&#39;s long, so we don&#39;t print it here).</span>
-<span id="cb19-214"><a href="#cb19-214" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb19-215"><a href="#cb19-215" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-216"><a href="#cb19-216" aria-hidden="true" tabindex="-1"></a><span class="fu">## Compustat and CRSP</span></span>
-<span id="cb19-217"><a href="#cb19-217" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-218"><a href="#cb19-218" aria-hidden="true" tabindex="-1"></a>We query WRDS by building SQL strings and running them with <span class="in">`con.execute(...).fetchdf()`</span>.</span>
-<span id="cb19-219"><a href="#cb19-219" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-220"><a href="#cb19-220" aria-hidden="true" tabindex="-1"></a><span class="fu">### Compustat: company information (`comp.company`)</span></span>
-<span id="cb19-221"><a href="#cb19-221" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-222"><a href="#cb19-222" aria-hidden="true" tabindex="-1"></a><span class="in">`comp.company`</span> has one row per firm, keyed by **GVKEY** (Compustat&#39;s permanent firm id). It  also carries each firm&#39;s **CIK** — the SEC&#39;s id — which we use later to reach the filings.</span>
-<span id="cb19-223"><a href="#cb19-223" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-226"><a href="#cb19-226" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb19-227"><a href="#cb19-227" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: comp-company</span></span>
-<span id="cb19-228"><a href="#cb19-228" aria-hidden="true" tabindex="-1"></a>company_q <span class="op">=</span> <span class="st">&quot;&quot;&quot;</span></span>
-<span id="cb19-229"><a href="#cb19-229" aria-hidden="true" tabindex="-1"></a><span class="st">  SELECT gvkey, conm, cik, sic, state</span></span>
-<span id="cb19-230"><a href="#cb19-230" aria-hidden="true" tabindex="-1"></a><span class="st">  FROM wrds.comp.company</span></span>
-<span id="cb19-231"><a href="#cb19-231" aria-hidden="true" tabindex="-1"></a><span class="st">  WHERE conm LIKE &#39;A%&#39;</span></span>
-<span id="cb19-232"><a href="#cb19-232" aria-hidden="true" tabindex="-1"></a><span class="st">  ORDER BY conm</span></span>
-<span id="cb19-233"><a href="#cb19-233" aria-hidden="true" tabindex="-1"></a><span class="st">  LIMIT 5</span></span>
-<span id="cb19-234"><a href="#cb19-234" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;&quot;&quot;</span></span>
-<span id="cb19-235"><a href="#cb19-235" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-236"><a href="#cb19-236" aria-hidden="true" tabindex="-1"></a>con.execute(company_q).fetchdf()</span>
-<span id="cb19-237"><a href="#cb19-237" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-238"><a href="#cb19-238" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-239"><a href="#cb19-239" aria-hidden="true" tabindex="-1"></a><span class="fu">### Compustat: yearly financials (`comp.funda`)</span></span>
-<span id="cb19-240"><a href="#cb19-240" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-241"><a href="#cb19-241" aria-hidden="true" tabindex="-1"></a><span class="in">`comp.funda`</span> holds the annual income statement, balance sheet, and cash-flow items.</span>
-<span id="cb19-242"><a href="#cb19-242" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-245"><a href="#cb19-245" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb19-246"><a href="#cb19-246" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: comp-funda</span></span>
-<span id="cb19-247"><a href="#cb19-247" aria-hidden="true" tabindex="-1"></a>cs_filter <span class="op">=</span> (<span class="st">&quot;consol = &#39;C&#39; and (indfmt = &#39;INDL&#39; or indfmt = &#39;FS&#39;) &quot;</span></span>
-<span id="cb19-248"><a href="#cb19-248" aria-hidden="true" tabindex="-1"></a>             <span class="st">&quot;and datafmt = &#39;STD&#39; and popsrc = &#39;D&#39;&quot;</span>)</span>
-<span id="cb19-249"><a href="#cb19-249" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-250"><a href="#cb19-250" aria-hidden="true" tabindex="-1"></a>funda_q <span class="op">=</span> <span class="ss">f&#39;&#39;&#39;</span></span>
-<span id="cb19-251"><a href="#cb19-251" aria-hidden="true" tabindex="-1"></a><span class="ss">  SELECT gvkey, datadate, fyear,</span></span>
-<span id="cb19-252"><a href="#cb19-252" aria-hidden="true" tabindex="-1"></a><span class="ss">         &quot;at&quot;, sale, ni, ceq, prcc_f, csho</span></span>
-<span id="cb19-253"><a href="#cb19-253" aria-hidden="true" tabindex="-1"></a><span class="ss">  FROM wrds.comp.funda</span></span>
-<span id="cb19-254"><a href="#cb19-254" aria-hidden="true" tabindex="-1"></a><span class="ss">  WHERE </span><span class="sc">{</span>cs_filter<span class="sc">}</span></span>
-<span id="cb19-255"><a href="#cb19-255" aria-hidden="true" tabindex="-1"></a><span class="ss">  LIMIT 5</span></span>
-<span id="cb19-256"><a href="#cb19-256" aria-hidden="true" tabindex="-1"></a><span class="ss">&#39;&#39;&#39;</span></span>
-<span id="cb19-257"><a href="#cb19-257" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-258"><a href="#cb19-258" aria-hidden="true" tabindex="-1"></a>con.execute(funda_q).fetchdf()</span>
-<span id="cb19-259"><a href="#cb19-259" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-260"><a href="#cb19-260" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-261"><a href="#cb19-261" aria-hidden="true" tabindex="-1"></a>We can take a quick look at the data — for instance, how many firm-years there are per decade.</span>
-<span id="cb19-262"><a href="#cb19-262" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-265"><a href="#cb19-265" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb19-266"><a href="#cb19-266" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: comp-funda-counts</span></span>
-<span id="cb19-267"><a href="#cb19-267" aria-hidden="true" tabindex="-1"></a>counts_q <span class="op">=</span> <span class="ss">f&#39;&#39;&#39;</span></span>
-<span id="cb19-268"><a href="#cb19-268" aria-hidden="true" tabindex="-1"></a><span class="ss">  SELECT CAST(floor(fyear / 10) * 10 AS INTEGER) AS decade, COUNT(*) AS n</span></span>
-<span id="cb19-269"><a href="#cb19-269" aria-hidden="true" tabindex="-1"></a><span class="ss">  FROM wrds.comp.funda</span></span>
-<span id="cb19-270"><a href="#cb19-270" aria-hidden="true" tabindex="-1"></a><span class="ss">  WHERE </span><span class="sc">{</span>cs_filter<span class="sc">}</span></span>
-<span id="cb19-271"><a href="#cb19-271" aria-hidden="true" tabindex="-1"></a><span class="ss">  GROUP BY decade</span></span>
-<span id="cb19-272"><a href="#cb19-272" aria-hidden="true" tabindex="-1"></a><span class="ss">  ORDER BY decade</span></span>
-<span id="cb19-273"><a href="#cb19-273" aria-hidden="true" tabindex="-1"></a><span class="ss">&#39;&#39;&#39;</span></span>
-<span id="cb19-274"><a href="#cb19-274" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-275"><a href="#cb19-275" aria-hidden="true" tabindex="-1"></a>con.execute(counts_q).fetchdf()</span>
-<span id="cb19-276"><a href="#cb19-276" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-277"><a href="#cb19-277" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-278"><a href="#cb19-278" aria-hidden="true" tabindex="-1"></a><span class="fu">### CRSP: prices, returns, and volume</span></span>
-<span id="cb19-279"><a href="#cb19-279" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-280"><a href="#cb19-280" aria-hidden="true" tabindex="-1"></a>CRSP holds daily and monthly market data for US-listed stocks. Its id is **PERMNO** (one</span>
-<span id="cb19-281"><a href="#cb19-281" aria-hidden="true" tabindex="-1"></a>per security); **PERMCO** is the company-level id. CRSP does **not** use GVKEY — that gap is</span>
-<span id="cb19-282"><a href="#cb19-282" aria-hidden="true" tabindex="-1"></a>what the CCM link table (below) closes. First, a lookup from ticker to PERMNO:</span>
-<span id="cb19-283"><a href="#cb19-283" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-286"><a href="#cb19-286" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb19-287"><a href="#cb19-287" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: crsp-stocknames</span></span>
-<span id="cb19-288"><a href="#cb19-288" aria-hidden="true" tabindex="-1"></a>names_q <span class="op">=</span> <span class="st">&quot;&quot;&quot;</span></span>
-<span id="cb19-289"><a href="#cb19-289" aria-hidden="true" tabindex="-1"></a><span class="st">  SELECT permno, comnam, ticker, namedt, nameenddt</span></span>
-<span id="cb19-290"><a href="#cb19-290" aria-hidden="true" tabindex="-1"></a><span class="st">  FROM wrds.crsp.stocknames</span></span>
-<span id="cb19-291"><a href="#cb19-291" aria-hidden="true" tabindex="-1"></a><span class="st">  WHERE ticker = &#39;AAPL&#39;</span></span>
-<span id="cb19-292"><a href="#cb19-292" aria-hidden="true" tabindex="-1"></a><span class="st">  LIMIT 5</span></span>
-<span id="cb19-293"><a href="#cb19-293" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;&quot;&quot;</span></span>
-<span id="cb19-294"><a href="#cb19-294" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-295"><a href="#cb19-295" aria-hidden="true" tabindex="-1"></a>con.execute(names_q).fetchdf()</span>
-<span id="cb19-296"><a href="#cb19-296" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-297"><a href="#cb19-297" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-298"><a href="#cb19-298" aria-hidden="true" tabindex="-1"></a>The daily stock file is <span class="in">`crsp.dsf`</span>; the matching market index is <span class="in">`crsp.dsi`</span>, which carries</span>
-<span id="cb19-299"><a href="#cb19-299" aria-hidden="true" tabindex="-1"></a>the value-weighted market return <span class="in">`vwretd`</span> (the benchmark for computing &quot;abnormal&quot; returns).</span>
-<span id="cb19-300"><a href="#cb19-300" aria-hidden="true" tabindex="-1"></a>There are monthly twins, <span class="in">`crsp.msf`</span> and <span class="in">`crsp.msi`</span>, for longer horizons.</span>
-<span id="cb19-301"><a href="#cb19-301" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-304"><a href="#cb19-304" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb19-305"><a href="#cb19-305" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: crsp-dsf</span></span>
-<span id="cb19-306"><a href="#cb19-306" aria-hidden="true" tabindex="-1"></a>dsf_q <span class="op">=</span> <span class="st">&quot;&quot;&quot;</span></span>
-<span id="cb19-307"><a href="#cb19-307" aria-hidden="true" tabindex="-1"></a><span class="st">  SELECT permno, date, ret, retx, prc, vol, shrout</span></span>
-<span id="cb19-308"><a href="#cb19-308" aria-hidden="true" tabindex="-1"></a><span class="st">  FROM wrds.crsp.dsf</span></span>
-<span id="cb19-309"><a href="#cb19-309" aria-hidden="true" tabindex="-1"></a><span class="st">  WHERE permno = 14593 AND date &gt;= DATE &#39;2020-01-01&#39;</span></span>
-<span id="cb19-310"><a href="#cb19-310" aria-hidden="true" tabindex="-1"></a><span class="st">  LIMIT 5</span></span>
-<span id="cb19-311"><a href="#cb19-311" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;&quot;&quot;</span></span>
-<span id="cb19-312"><a href="#cb19-312" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-313"><a href="#cb19-313" aria-hidden="true" tabindex="-1"></a>con.execute(dsf_q).fetchdf()</span>
-<span id="cb19-314"><a href="#cb19-314" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-315"><a href="#cb19-315" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-316"><a href="#cb19-316" aria-hidden="true" tabindex="-1"></a><span class="fu">## Linking the databases</span></span>
-<span id="cb19-317"><a href="#cb19-317" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-318"><a href="#cb19-318" aria-hidden="true" tabindex="-1"></a>We have three datasets, each with its own identifier:</span>
-<span id="cb19-319"><a href="#cb19-319" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-320"><a href="#cb19-320" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Dataset <span class="pp">|</span> Its identifier <span class="pp">|</span></span>
-<span id="cb19-321"><a href="#cb19-321" aria-hidden="true" tabindex="-1"></a><span class="pp">|---|---|</span></span>
-<span id="cb19-322"><a href="#cb19-322" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 10-K filings (EDGAR) <span class="pp">|</span> CIK <span class="pp">|</span></span>
-<span id="cb19-323"><a href="#cb19-323" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Compustat (<span class="in">`comp`</span>) <span class="pp">|</span> GVKEY <span class="pp">|</span></span>
-<span id="cb19-324"><a href="#cb19-324" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> CRSP (<span class="in">`crsp`</span>) <span class="pp">|</span> PERMNO <span class="pp">|</span></span>
-<span id="cb19-325"><a href="#cb19-325" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-326"><a href="#cb19-326" aria-hidden="true" tabindex="-1"></a>We need two bridges: GVKEY ↔ PERMNO (to add returns to fundamentals) and CIK ↔ GVKEY (to</span>
-<span id="cb19-327"><a href="#cb19-327" aria-hidden="true" tabindex="-1"></a>attach both to a filing). Because everything lives in one DuckDB connection, we build each</span>
-<span id="cb19-328"><a href="#cb19-328" aria-hidden="true" tabindex="-1"></a>bridge as a **view** and join them in SQL.</span>
-<span id="cb19-329"><a href="#cb19-329" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-330"><a href="#cb19-330" aria-hidden="true" tabindex="-1"></a><span class="fu">### CRSP ↔ Compustat: the CCM link</span></span>
-<span id="cb19-331"><a href="#cb19-331" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-332"><a href="#cb19-332" aria-hidden="true" tabindex="-1"></a>WRDS ships the **CRSP/Compustat Merged** link in <span class="in">`crsp.ccmxpf_lnkhist`</span>. Each row maps a <span class="in">`gvkey`</span> to a PERMNO (<span class="in">`lpermno`</span>) valid over <span class="in">`[linkdt, linkenddt]`</span>. We keep only clean links — link types <span class="in">`LC`</span>/<span class="in">`LU`</span>/<span class="in">`LS`</span> and primary markers <span class="in">`C`</span>/<span class="in">`P`</span> — and fill a missing <span class="in">`linkenddt`</span> (meaning &quot;still valid&quot;) with the latest end date in the table so the date comparison works.</span>
-<span id="cb19-333"><a href="#cb19-333" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-336"><a href="#cb19-336" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb19-337"><a href="#cb19-337" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: ccm-build</span></span>
-<span id="cb19-338"><a href="#cb19-338" aria-hidden="true" tabindex="-1"></a>con.execute(<span class="st">&quot;&quot;&quot;</span></span>
-<span id="cb19-339"><a href="#cb19-339" aria-hidden="true" tabindex="-1"></a><span class="st">  CREATE OR REPLACE VIEW ccm_link AS</span></span>
-<span id="cb19-340"><a href="#cb19-340" aria-hidden="true" tabindex="-1"></a><span class="st">  SELECT gvkey,</span></span>
-<span id="cb19-341"><a href="#cb19-341" aria-hidden="true" tabindex="-1"></a><span class="st">         lpermno AS permno,</span></span>
-<span id="cb19-342"><a href="#cb19-342" aria-hidden="true" tabindex="-1"></a><span class="st">         lpermco AS permco,</span></span>
-<span id="cb19-343"><a href="#cb19-343" aria-hidden="true" tabindex="-1"></a><span class="st">         linkdt,</span></span>
-<span id="cb19-344"><a href="#cb19-344" aria-hidden="true" tabindex="-1"></a><span class="st">         COALESCE(linkenddt, MAX(linkenddt) OVER ()) AS linkenddt</span></span>
-<span id="cb19-345"><a href="#cb19-345" aria-hidden="true" tabindex="-1"></a><span class="st">  FROM wrds.crsp.ccmxpf_lnkhist</span></span>
-<span id="cb19-346"><a href="#cb19-346" aria-hidden="true" tabindex="-1"></a><span class="st">  WHERE linktype IN (&#39;LC&#39;, &#39;LU&#39;, &#39;LS&#39;)</span></span>
-<span id="cb19-347"><a href="#cb19-347" aria-hidden="true" tabindex="-1"></a><span class="st">    AND linkprim IN (&#39;C&#39;, &#39;P&#39;)</span></span>
-<span id="cb19-348"><a href="#cb19-348" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;&quot;&quot;</span>)</span>
-<span id="cb19-349"><a href="#cb19-349" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-350"><a href="#cb19-350" aria-hidden="true" tabindex="-1"></a>con.execute(<span class="st">&quot;SELECT * FROM ccm_link LIMIT 5&quot;</span>).fetchdf()</span>
-<span id="cb19-351"><a href="#cb19-351" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-352"><a href="#cb19-352" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-353"><a href="#cb19-353" aria-hidden="true" tabindex="-1"></a><span class="fu">### EDGAR ↔ Compustat: matching on CIK</span></span>
-<span id="cb19-354"><a href="#cb19-354" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-355"><a href="#cb19-355" aria-hidden="true" tabindex="-1"></a>A 10-K filing is identified by its **CIK**. The simplest bridge to Compustat is the <span class="in">`cik`</span></span>
-<span id="cb19-356"><a href="#cb19-356" aria-hidden="true" tabindex="-1"></a>column already in <span class="in">`comp.company`</span>. We cast it to an integer.</span>
-<span id="cb19-357"><a href="#cb19-357" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-360"><a href="#cb19-360" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb19-361"><a href="#cb19-361" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: cik-gvkey</span></span>
-<span id="cb19-362"><a href="#cb19-362" aria-hidden="true" tabindex="-1"></a>con.execute(<span class="st">&quot;&quot;&quot;</span></span>
-<span id="cb19-363"><a href="#cb19-363" aria-hidden="true" tabindex="-1"></a><span class="st">  CREATE OR REPLACE VIEW cik_gvkey AS</span></span>
-<span id="cb19-364"><a href="#cb19-364" aria-hidden="true" tabindex="-1"></a><span class="st">  SELECT DISTINCT CAST(cik AS INTEGER) AS cik, gvkey</span></span>
-<span id="cb19-365"><a href="#cb19-365" aria-hidden="true" tabindex="-1"></a><span class="st">  FROM wrds.comp.company</span></span>
-<span id="cb19-366"><a href="#cb19-366" aria-hidden="true" tabindex="-1"></a><span class="st">  WHERE cik IS NOT NULL</span></span>
-<span id="cb19-367"><a href="#cb19-367" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;&quot;&quot;</span>)</span>
-<span id="cb19-368"><a href="#cb19-368" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-369"><a href="#cb19-369" aria-hidden="true" tabindex="-1"></a>con.execute(<span class="st">&quot;SELECT * FROM cik_gvkey LIMIT 5&quot;</span>).fetchdf()</span>
-<span id="cb19-370"><a href="#cb19-370" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-371"><a href="#cb19-371" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-372"><a href="#cb19-372" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> class</span><span class="op">=</span><span class="st">&quot;info-card&quot;</span><span class="dt">&gt;</span></span>
-<span id="cb19-373"><a href="#cb19-373" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">b</span><span class="dt">&gt;</span>Watch the type.<span class="dt">&lt;/</span><span class="kw">b</span><span class="dt">&gt;</span> Compustat stores <span class="dt">&lt;</span><span class="kw">code</span><span class="dt">&gt;</span>cik<span class="dt">&lt;/</span><span class="kw">code</span><span class="dt">&gt;</span> as zero-padded text</span>
-<span id="cb19-374"><a href="#cb19-374" aria-hidden="true" tabindex="-1"></a>(<span class="dt">&lt;</span><span class="kw">code</span><span class="dt">&gt;</span>&quot;0000320193&quot;<span class="dt">&lt;/</span><span class="kw">code</span><span class="dt">&gt;</span>) while the EDGAR data stores it as a number</span>
-<span id="cb19-375"><a href="#cb19-375" aria-hidden="true" tabindex="-1"></a>(<span class="dt">&lt;</span><span class="kw">code</span><span class="dt">&gt;</span>320193<span class="dt">&lt;/</span><span class="kw">code</span><span class="dt">&gt;</span>). Join text to a number and you silently get <span class="dt">&lt;</span><span class="kw">i</span><span class="dt">&gt;</span>zero<span class="dt">&lt;/</span><span class="kw">i</span><span class="dt">&gt;</span> matches, so we</span>
-<span id="cb19-376"><a href="#cb19-376" aria-hidden="true" tabindex="-1"></a>cast both sides to integer.</span>
-<span id="cb19-377"><a href="#cb19-377" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb19-378"><a href="#cb19-378" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-379"><a href="#cb19-379" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> class</span><span class="op">=</span><span class="st">&quot;info-card&quot;</span><span class="dt">&gt;</span></span>
-<span id="cb19-380"><a href="#cb19-380" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">b</span><span class="dt">&gt;</span>One limitation: <span class="dt">&lt;/</span><span class="kw">b</span><span class="dt">&gt;</span> <span class="dt">&lt;</span><span class="kw">code</span><span class="dt">&gt;</span>comp.company<span class="dt">&lt;/</span><span class="kw">code</span><span class="dt">&gt;</span> keeps only the firm&#39;s</span>
-<span id="cb19-381"><a href="#cb19-381" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">i</span><span class="dt">&gt;</span>current<span class="dt">&lt;/</span><span class="kw">i</span><span class="dt">&gt;</span> CIK. A firm that changed CIK over time (often after a restructuring) may miss</span>
-<span id="cb19-382"><a href="#cb19-382" aria-hidden="true" tabindex="-1"></a>its older filings. <span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb19-383"><a href="#cb19-383" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-384"><a href="#cb19-384" aria-hidden="true" tabindex="-1"></a><span class="fu">### Bringing in the 10-K filings</span></span>
-<span id="cb19-385"><a href="#cb19-385" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-386"><a href="#cb19-386" aria-hidden="true" tabindex="-1"></a>The 10-K data are the parquet files from <span class="in">`edgar_10k_intro_python.qmd`</span>, read with DuckDB over HTTPS.</span>
-<span id="cb19-387"><a href="#cb19-387" aria-hidden="true" tabindex="-1"></a>Because they live in the **same** <span class="in">`con`</span> that has WRDS attached, we can join filings to</span>
-<span id="cb19-388"><a href="#cb19-388" aria-hidden="true" tabindex="-1"></a>Compustat and CRSP directly. We expose just the linking columns and cast <span class="in">`cik`</span> to integer.</span>
-<span id="cb19-389"><a href="#cb19-389" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-392"><a href="#cb19-392" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb19-393"><a href="#cb19-393" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: edgar-view</span></span>
-<span id="cb19-394"><a href="#cb19-394" aria-hidden="true" tabindex="-1"></a>BASE_URL <span class="op">=</span> <span class="st">&quot;https://trr266.wiwi.hu-berlin.de/edgar_10k_apr26/&quot;</span></span>
-<span id="cb19-395"><a href="#cb19-395" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-396"><a href="#cb19-396" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-397"><a href="#cb19-397" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> list_parquet_files(base_url):</span>
-<span id="cb19-398"><a href="#cb19-398" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> requests.get(base_url, timeout<span class="op">=</span><span class="dv">60</span>)</span>
-<span id="cb19-399"><a href="#cb19-399" aria-hidden="true" tabindex="-1"></a>    response.raise_for_status()</span>
-<span id="cb19-400"><a href="#cb19-400" aria-hidden="true" tabindex="-1"></a>    soup <span class="op">=</span> BeautifulSoup(response.text, <span class="st">&quot;html.parser&quot;</span>)</span>
-<span id="cb19-401"><a href="#cb19-401" aria-hidden="true" tabindex="-1"></a>    files <span class="op">=</span> []</span>
-<span id="cb19-402"><a href="#cb19-402" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> anchor <span class="kw">in</span> soup.find_all(<span class="st">&quot;a&quot;</span>):</span>
-<span id="cb19-403"><a href="#cb19-403" aria-hidden="true" tabindex="-1"></a>        href <span class="op">=</span> anchor.get(<span class="st">&quot;href&quot;</span>)</span>
-<span id="cb19-404"><a href="#cb19-404" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> href <span class="kw">and</span> href.lower().endswith(<span class="st">&quot;.parquet&quot;</span>):</span>
-<span id="cb19-405"><a href="#cb19-405" aria-hidden="true" tabindex="-1"></a>            files.append(base_url <span class="op">+</span> href)</span>
-<span id="cb19-406"><a href="#cb19-406" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">sorted</span>(files)</span>
-<span id="cb19-407"><a href="#cb19-407" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-408"><a href="#cb19-408" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-409"><a href="#cb19-409" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> duckdb_list_literal(urls):</span>
-<span id="cb19-410"><a href="#cb19-410" aria-hidden="true" tabindex="-1"></a>    escaped <span class="op">=</span> [url.replace(<span class="st">&quot;&#39;&quot;</span>, <span class="st">&quot;&#39;&#39;&quot;</span>) <span class="cf">for</span> url <span class="kw">in</span> urls]</span>
-<span id="cb19-411"><a href="#cb19-411" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="st">&quot;[&#39;&quot;</span> <span class="op">+</span> <span class="st">&quot;&#39;,&#39;&quot;</span>.join(escaped) <span class="op">+</span> <span class="st">&quot;&#39;]&quot;</span></span>
-<span id="cb19-412"><a href="#cb19-412" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-413"><a href="#cb19-413" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-414"><a href="#cb19-414" aria-hidden="true" tabindex="-1"></a>con.execute(<span class="st">&quot;INSTALL httpfs;&quot;</span>)</span>
-<span id="cb19-415"><a href="#cb19-415" aria-hidden="true" tabindex="-1"></a>con.execute(<span class="st">&quot;LOAD httpfs;&quot;</span>)</span>
-<span id="cb19-416"><a href="#cb19-416" aria-hidden="true" tabindex="-1"></a>con.execute(<span class="st">&quot;SET enable_http_metadata_cache = true;&quot;</span>)</span>
-<span id="cb19-417"><a href="#cb19-417" aria-hidden="true" tabindex="-1"></a>file_list <span class="op">=</span> duckdb_list_literal(list_parquet_files(BASE_URL))</span>
-<span id="cb19-418"><a href="#cb19-418" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-419"><a href="#cb19-419" aria-hidden="true" tabindex="-1"></a>con.execute(<span class="ss">f&quot;&quot;&quot;</span></span>
-<span id="cb19-420"><a href="#cb19-420" aria-hidden="true" tabindex="-1"></a><span class="ss">  CREATE OR REPLACE VIEW edgar_10k AS</span></span>
-<span id="cb19-421"><a href="#cb19-421" aria-hidden="true" tabindex="-1"></a><span class="ss">  SELECT TRY_CAST(cik AS INTEGER) AS cik,</span></span>
-<span id="cb19-422"><a href="#cb19-422" aria-hidden="true" tabindex="-1"></a><span class="ss">         accessionNumber,</span></span>
-<span id="cb19-423"><a href="#cb19-423" aria-hidden="true" tabindex="-1"></a><span class="ss">         CAST(filingDate AS DATE) AS filingDate,</span></span>
-<span id="cb19-424"><a href="#cb19-424" aria-hidden="true" tabindex="-1"></a><span class="ss">         form</span></span>
-<span id="cb19-425"><a href="#cb19-425" aria-hidden="true" tabindex="-1"></a><span class="ss">  FROM parquet_scan(</span><span class="sc">{</span>file_list<span class="sc">}</span><span class="ss">, filename = true, union_by_name = true)</span></span>
-<span id="cb19-426"><a href="#cb19-426" aria-hidden="true" tabindex="-1"></a><span class="ss">&quot;&quot;&quot;</span>)</span>
-<span id="cb19-427"><a href="#cb19-427" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-428"><a href="#cb19-428" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-429"><a href="#cb19-429" aria-hidden="true" tabindex="-1"></a>Now build the linked sample in one SQL join: filings → CIK → GVKEY → PERMNO, requiring the</span>
-<span id="cb19-430"><a href="#cb19-430" aria-hidden="true" tabindex="-1"></a>filing date to fall inside the CCM link window.</span>
-<span id="cb19-431"><a href="#cb19-431" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-434"><a href="#cb19-434" aria-hidden="true" tabindex="-1"></a><span class="in">```{mermaid}</span></span>
-<span id="cb19-435"><a href="#cb19-435" aria-hidden="true" tabindex="-1"></a>%%| label: <span class="fu">link</span>-diagram</span>
-<span id="cb19-436"><a href="#cb19-436" aria-hidden="true" tabindex="-1"></a>flowchart LR</span>
-<span id="cb19-437"><a href="#cb19-437" aria-hidden="true" tabindex="-1"></a>    E[<span class="ot">&quot;</span><span class="st">10-K filings&lt;br/&gt;(CIK)&lt;br/&gt;&lt;i&gt;text / metadata&lt;/i&gt;</span><span class="ot">&quot;</span>]</span>
-<span id="cb19-438"><a href="#cb19-438" aria-hidden="true" tabindex="-1"></a>    C[<span class="ot">&quot;</span><span class="st">Compustat&lt;br/&gt;(GVKEY)&lt;br/&gt;&lt;i&gt;financials&lt;/i&gt;</span><span class="ot">&quot;</span>]</span>
-<span id="cb19-439"><a href="#cb19-439" aria-hidden="true" tabindex="-1"></a>    R[<span class="ot">&quot;</span><span class="st">CRSP&lt;br/&gt;(PERMNO)&lt;br/&gt;&lt;i&gt;returns&lt;/i&gt;</span><span class="ot">&quot;</span>]</span>
-<span id="cb19-440"><a href="#cb19-440" aria-hidden="true" tabindex="-1"></a>    E ---|<span class="ot">&quot;</span><span class="st">cik_gvkey&lt;br/&gt;CIK</span><span class="ot">&quot;</span>| C</span>
-<span id="cb19-441"><a href="#cb19-441" aria-hidden="true" tabindex="-1"></a>    C ---|<span class="ot">&quot;</span><span class="st">ccm_link&lt;br/&gt;GVKEY ↔ PERMNO</span><span class="ot">&quot;</span>| R</span>
-<span id="cb19-442"><a href="#cb19-442" aria-hidden="true" tabindex="-1"></a>    classDef hub fill:<span class="co">#1b8a8f,stroke:#7cc7ff,color:#ffffff;</span></span>
-<span id="cb19-443"><a href="#cb19-443" aria-hidden="true" tabindex="-1"></a>    class C hub;</span>
-<span id="cb19-444"><a href="#cb19-444" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-445"><a href="#cb19-445" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-448"><a href="#cb19-448" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb19-449"><a href="#cb19-449" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: linked-sample</span></span>
-<span id="cb19-450"><a href="#cb19-450" aria-hidden="true" tabindex="-1"></a>con.execute(<span class="st">&quot;&quot;&quot;</span></span>
-<span id="cb19-451"><a href="#cb19-451" aria-hidden="true" tabindex="-1"></a><span class="st">  CREATE OR REPLACE TEMP TABLE linked_sample AS</span></span>
-<span id="cb19-452"><a href="#cb19-452" aria-hidden="true" tabindex="-1"></a><span class="st">  SELECT e.cik, e.accessionNumber, e.filingDate, g.gvkey, l.permno</span></span>
-<span id="cb19-453"><a href="#cb19-453" aria-hidden="true" tabindex="-1"></a><span class="st">  FROM edgar_10k e</span></span>
-<span id="cb19-454"><a href="#cb19-454" aria-hidden="true" tabindex="-1"></a><span class="st">  JOIN cik_gvkey g USING (cik)</span></span>
-<span id="cb19-455"><a href="#cb19-455" aria-hidden="true" tabindex="-1"></a><span class="st">  JOIN ccm_link  l</span></span>
-<span id="cb19-456"><a href="#cb19-456" aria-hidden="true" tabindex="-1"></a><span class="st">    ON l.gvkey = g.gvkey</span></span>
-<span id="cb19-457"><a href="#cb19-457" aria-hidden="true" tabindex="-1"></a><span class="st">   AND e.filingDate BETWEEN l.linkdt AND l.linkenddt</span></span>
-<span id="cb19-458"><a href="#cb19-458" aria-hidden="true" tabindex="-1"></a><span class="st">  WHERE e.form = &#39;10-K&#39;</span></span>
-<span id="cb19-459"><a href="#cb19-459" aria-hidden="true" tabindex="-1"></a><span class="st">    AND e.cik IS NOT NULL</span></span>
-<span id="cb19-460"><a href="#cb19-460" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;&quot;&quot;</span>)</span>
-<span id="cb19-461"><a href="#cb19-461" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-462"><a href="#cb19-462" aria-hidden="true" tabindex="-1"></a>con.execute(<span class="st">&quot;SELECT * FROM linked_sample LIMIT 5&quot;</span>).fetchdf()</span>
-<span id="cb19-463"><a href="#cb19-463" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-464"><a href="#cb19-464" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-465"><a href="#cb19-465" aria-hidden="true" tabindex="-1"></a>Report how many filings made it through. Filings that drop out (no current CIK match, foreign issuers, timing gaps) are worth reporting.</span>
-<span id="cb19-466"><a href="#cb19-466" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-469"><a href="#cb19-469" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb19-470"><a href="#cb19-470" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: match-rate</span></span>
-<span id="cb19-471"><a href="#cb19-471" aria-hidden="true" tabindex="-1"></a>counts <span class="op">=</span> con.execute(<span class="st">&quot;&quot;&quot;</span></span>
-<span id="cb19-472"><a href="#cb19-472" aria-hidden="true" tabindex="-1"></a><span class="st">  SELECT</span></span>
-<span id="cb19-473"><a href="#cb19-473" aria-hidden="true" tabindex="-1"></a><span class="st">    (SELECT COUNT(*) FROM edgar_10k</span></span>
-<span id="cb19-474"><a href="#cb19-474" aria-hidden="true" tabindex="-1"></a><span class="st">       WHERE form = &#39;10-K&#39; AND cik IS NOT NULL)         AS n_filings,</span></span>
-<span id="cb19-475"><a href="#cb19-475" aria-hidden="true" tabindex="-1"></a><span class="st">    (SELECT COUNT(*) FROM linked_sample)                AS n_with_permno</span></span>
-<span id="cb19-476"><a href="#cb19-476" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;&quot;&quot;</span>).fetchdf()</span>
-<span id="cb19-477"><a href="#cb19-477" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-478"><a href="#cb19-478" aria-hidden="true" tabindex="-1"></a>counts.assign(</span>
-<span id="cb19-479"><a href="#cb19-479" aria-hidden="true" tabindex="-1"></a>    pct_linked<span class="op">=</span>(<span class="dv">100</span> <span class="op">*</span> counts[<span class="st">&quot;n_with_permno&quot;</span>] <span class="op">/</span> counts[<span class="st">&quot;n_filings&quot;</span>]).<span class="bu">round</span>(<span class="dv">1</span>)</span>
-<span id="cb19-480"><a href="#cb19-480" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb19-481"><a href="#cb19-481" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-482"><a href="#cb19-482" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-483"><a href="#cb19-483" aria-hidden="true" tabindex="-1"></a><span class="fu">## Reference</span></span>
-<span id="cb19-484"><a href="#cb19-484" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-485"><a href="#cb19-485" aria-hidden="true" tabindex="-1"></a>The Compustat and CRSP material, and the CRSP–Compustat (CCM) link used here, follow Ian D.</span>
-<span id="cb19-486"><a href="#cb19-486" aria-hidden="true" tabindex="-1"></a>Gow and Tongqing Ding, very helpful textbook <span class="co">[</span><span class="ot">**Empirical Research in Accounting: Tools and Methods**</span><span class="co">](https://iangow.github.io/far_book/)</span>{target=&quot;_blank&quot;}</span>
+<div class="sourceCode" id="cb18" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> &quot;WRDS: Compustat, CRSP, and Linking to 10-K Filings&quot;</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="an">subtitle:</span><span class="co"> &quot;Research in Corporate Transparency 2026&quot;</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> &quot;Fikir Worku Edossa&quot;</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="co">    toc: true</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="co">    toc-depth: 3</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="co">    toc-location: left</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="co">    number-sections: true</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="co">    code-fold: false</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a><span class="co">    code-tools: true</span></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a><span class="co">    theme: darkly</span></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a><span class="co">    embed-resources: true</span></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a><span class="co">    df-print: paged</span></span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a><span class="co">    mermaid:</span></span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a><span class="co">      theme: dark</span></span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a><span class="an">execute:</span></span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a><span class="co">  echo: true</span></span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a><span class="co">  eval: true</span></span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a><span class="co">  warning: false</span></span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a><span class="co">  message: false</span></span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">style</span><span class="dt">&gt;</span></span>
+<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a><span class="in">:root</span> {</span>
+<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a>  <span class="kw">color-scheme</span><span class="ch">:</span> <span class="dv">dark</span><span class="op">;</span></span>
+<span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a>body<span class="op">,</span></span>
+<span id="cb18-30"><a href="#cb18-30" aria-hidden="true" tabindex="-1"></a><span class="fu">.quarto-container</span><span class="op">,</span></span>
+<span id="cb18-31"><a href="#cb18-31" aria-hidden="true" tabindex="-1"></a><span class="pp">#quarto-content</span><span class="op">,</span></span>
+<span id="cb18-32"><a href="#cb18-32" aria-hidden="true" tabindex="-1"></a>main<span class="fu">.content</span> {</span>
+<span id="cb18-33"><a href="#cb18-33" aria-hidden="true" tabindex="-1"></a>  <span class="kw">background</span><span class="ch">:</span> <span class="cn">#050608</span> <span class="at">!important</span><span class="op">;</span></span>
+<span id="cb18-34"><a href="#cb18-34" aria-hidden="true" tabindex="-1"></a>  <span class="kw">color</span><span class="ch">:</span> <span class="cn">#e8edf2</span> <span class="at">!important</span><span class="op">;</span></span>
+<span id="cb18-35"><a href="#cb18-35" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb18-36"><a href="#cb18-36" aria-hidden="true" tabindex="-1"></a>a { <span class="kw">color</span><span class="ch">:</span> <span class="cn">#7cc7ff</span><span class="op">;</span> }</span>
+<span id="cb18-37"><a href="#cb18-37" aria-hidden="true" tabindex="-1"></a>a<span class="in">:hover</span> { <span class="kw">color</span><span class="ch">:</span> <span class="cn">#a9dcff</span><span class="op">;</span> }</span>
+<span id="cb18-38"><a href="#cb18-38" aria-hidden="true" tabindex="-1"></a><span class="fu">.quarto-title-block</span> <span class="fu">.subtitle</span> { <span class="kw">font-size</span><span class="ch">:</span> <span class="dv">1.25</span><span class="dt">rem</span><span class="op">;</span> }</span>
+<span id="cb18-39"><a href="#cb18-39" aria-hidden="true" tabindex="-1"></a><span class="fu">.sidebar</span><span class="op">,</span></span>
+<span id="cb18-40"><a href="#cb18-40" aria-hidden="true" tabindex="-1"></a><span class="pp">#quarto-sidebar</span><span class="op">,</span></span>
+<span id="cb18-41"><a href="#cb18-41" aria-hidden="true" tabindex="-1"></a><span class="fu">.sidebar-navigation</span><span class="op">,</span></span>
+<span id="cb18-42"><a href="#cb18-42" aria-hidden="true" tabindex="-1"></a><span class="fu">.sidebar</span> nav<span class="ex">[</span><span class="ss">role</span><span class="op">=</span><span class="st">&quot;doc-toc&quot;</span><span class="ex">]</span> {</span>
+<span id="cb18-43"><a href="#cb18-43" aria-hidden="true" tabindex="-1"></a>  <span class="kw">background</span><span class="ch">:</span> <span class="cn">#080a0f</span> <span class="at">!important</span><span class="op">;</span></span>
+<span id="cb18-44"><a href="#cb18-44" aria-hidden="true" tabindex="-1"></a>  <span class="kw">color</span><span class="ch">:</span> <span class="cn">#d8dee9</span> <span class="at">!important</span><span class="op">;</span></span>
+<span id="cb18-45"><a href="#cb18-45" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb18-46"><a href="#cb18-46" aria-hidden="true" tabindex="-1"></a><span class="fu">.warning-card</span> {</span>
+<span id="cb18-47"><a href="#cb18-47" aria-hidden="true" tabindex="-1"></a>  <span class="kw">border-left</span><span class="ch">:</span> <span class="dv">5</span><span class="dt">px</span> <span class="dv">solid</span> <span class="cn">#ff6b6b</span><span class="op">;</span></span>
+<span id="cb18-48"><a href="#cb18-48" aria-hidden="true" tabindex="-1"></a>  <span class="kw">background</span><span class="ch">:</span> <span class="cn">#211014</span><span class="op">;</span></span>
+<span id="cb18-49"><a href="#cb18-49" aria-hidden="true" tabindex="-1"></a>  <span class="kw">color</span><span class="ch">:</span> <span class="cn">#f5d8dc</span><span class="op">;</span></span>
+<span id="cb18-50"><a href="#cb18-50" aria-hidden="true" tabindex="-1"></a>  <span class="kw">padding</span><span class="ch">:</span> <span class="dv">1</span><span class="dt">rem</span> <span class="dv">1.25</span><span class="dt">rem</span><span class="op">;</span></span>
+<span id="cb18-51"><a href="#cb18-51" aria-hidden="true" tabindex="-1"></a>  <span class="kw">margin</span><span class="ch">:</span> <span class="dv">1</span><span class="dt">rem</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb18-52"><a href="#cb18-52" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb18-53"><a href="#cb18-53" aria-hidden="true" tabindex="-1"></a><span class="fu">.info-card</span> {</span>
+<span id="cb18-54"><a href="#cb18-54" aria-hidden="true" tabindex="-1"></a>  <span class="kw">border-left</span><span class="ch">:</span> <span class="dv">5</span><span class="dt">px</span> <span class="dv">solid</span> <span class="cn">#7cc7ff</span><span class="op">;</span></span>
+<span id="cb18-55"><a href="#cb18-55" aria-hidden="true" tabindex="-1"></a>  <span class="kw">background</span><span class="ch">:</span> <span class="cn">#0d1722</span><span class="op">;</span></span>
+<span id="cb18-56"><a href="#cb18-56" aria-hidden="true" tabindex="-1"></a>  <span class="kw">color</span><span class="ch">:</span> <span class="cn">#d6e8f7</span><span class="op">;</span></span>
+<span id="cb18-57"><a href="#cb18-57" aria-hidden="true" tabindex="-1"></a>  <span class="kw">padding</span><span class="ch">:</span> <span class="dv">1</span><span class="dt">rem</span> <span class="dv">1.25</span><span class="dt">rem</span><span class="op">;</span></span>
+<span id="cb18-58"><a href="#cb18-58" aria-hidden="true" tabindex="-1"></a>  <span class="kw">margin</span><span class="ch">:</span> <span class="dv">1</span><span class="dt">rem</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb18-59"><a href="#cb18-59" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb18-60"><a href="#cb18-60" aria-hidden="true" tabindex="-1"></a><span class="fu">.teacher-note</span> {</span>
+<span id="cb18-61"><a href="#cb18-61" aria-hidden="true" tabindex="-1"></a>  <span class="kw">border-left</span><span class="ch">:</span> <span class="dv">5</span><span class="dt">px</span> <span class="dv">solid</span> <span class="cn">#f5c451</span><span class="op">;</span></span>
+<span id="cb18-62"><a href="#cb18-62" aria-hidden="true" tabindex="-1"></a>  <span class="kw">background</span><span class="ch">:</span> <span class="cn">#1c1708</span><span class="op">;</span></span>
+<span id="cb18-63"><a href="#cb18-63" aria-hidden="true" tabindex="-1"></a>  <span class="kw">color</span><span class="ch">:</span> <span class="cn">#f0e2bd</span><span class="op">;</span></span>
+<span id="cb18-64"><a href="#cb18-64" aria-hidden="true" tabindex="-1"></a>  <span class="kw">padding</span><span class="ch">:</span> <span class="dv">0.85</span><span class="dt">rem</span> <span class="dv">1.15</span><span class="dt">rem</span><span class="op">;</span></span>
+<span id="cb18-65"><a href="#cb18-65" aria-hidden="true" tabindex="-1"></a>  <span class="kw">margin</span><span class="ch">:</span> <span class="dv">0.75</span><span class="dt">rem</span> <span class="dv">0</span> <span class="dv">1.5</span><span class="dt">rem</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb18-66"><a href="#cb18-66" aria-hidden="true" tabindex="-1"></a>  <span class="kw">font-size</span><span class="ch">:</span> <span class="dv">0.92</span><span class="dt">rem</span><span class="op">;</span></span>
+<span id="cb18-67"><a href="#cb18-67" aria-hidden="true" tabindex="-1"></a>  <span class="kw">border-radius</span><span class="ch">:</span> <span class="dv">0</span> <span class="dv">4</span><span class="dt">px</span> <span class="dv">4</span><span class="dt">px</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb18-68"><a href="#cb18-68" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb18-69"><a href="#cb18-69" aria-hidden="true" tabindex="-1"></a><span class="fu">.teacher-note</span> p { <span class="kw">margin</span><span class="ch">:</span> <span class="dv">0.35</span><span class="dt">rem</span> <span class="dv">0</span><span class="op">;</span> }</span>
+<span id="cb18-70"><a href="#cb18-70" aria-hidden="true" tabindex="-1"></a><span class="fu">.teacher-note</span> blockquote {</span>
+<span id="cb18-71"><a href="#cb18-71" aria-hidden="true" tabindex="-1"></a>  <span class="kw">border-left</span><span class="ch">:</span> <span class="dv">3</span><span class="dt">px</span> <span class="dv">solid</span> <span class="cn">#8a7320</span><span class="op">;</span></span>
+<span id="cb18-72"><a href="#cb18-72" aria-hidden="true" tabindex="-1"></a>  <span class="kw">margin</span><span class="ch">:</span> <span class="dv">0.4</span><span class="dt">rem</span> <span class="dv">0</span> <span class="dv">0.4</span><span class="dt">rem</span> <span class="dv">0.2</span><span class="dt">rem</span><span class="op">;</span></span>
+<span id="cb18-73"><a href="#cb18-73" aria-hidden="true" tabindex="-1"></a>  <span class="kw">padding</span><span class="ch">:</span> <span class="dv">0.1</span><span class="dt">rem</span> <span class="dv">0</span> <span class="dv">0.1</span><span class="dt">rem</span> <span class="dv">0.8</span><span class="dt">rem</span><span class="op">;</span></span>
+<span id="cb18-74"><a href="#cb18-74" aria-hidden="true" tabindex="-1"></a>  <span class="kw">color</span><span class="ch">:</span> <span class="cn">#ffe9a8</span><span class="op">;</span></span>
+<span id="cb18-75"><a href="#cb18-75" aria-hidden="true" tabindex="-1"></a>  <span class="kw">font-style</span><span class="ch">:</span> <span class="dv">italic</span><span class="op">;</span></span>
+<span id="cb18-76"><a href="#cb18-76" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb18-77"><a href="#cb18-77" aria-hidden="true" tabindex="-1"></a><span class="fu">.teacher-note</span> <span class="fu">.tn-head</span> {</span>
+<span id="cb18-78"><a href="#cb18-78" aria-hidden="true" tabindex="-1"></a>  <span class="kw">text-transform</span><span class="ch">:</span> <span class="dv">uppercase</span><span class="op">;</span></span>
+<span id="cb18-79"><a href="#cb18-79" aria-hidden="true" tabindex="-1"></a>  <span class="kw">letter-spacing</span><span class="ch">:</span> <span class="dv">0.08</span><span class="dt">em</span><span class="op">;</span></span>
+<span id="cb18-80"><a href="#cb18-80" aria-hidden="true" tabindex="-1"></a>  <span class="kw">font-weight</span><span class="ch">:</span> <span class="dv">700</span><span class="op">;</span></span>
+<span id="cb18-81"><a href="#cb18-81" aria-hidden="true" tabindex="-1"></a>  <span class="kw">color</span><span class="ch">:</span> <span class="cn">#f5c451</span><span class="op">;</span></span>
+<span id="cb18-82"><a href="#cb18-82" aria-hidden="true" tabindex="-1"></a>  <span class="kw">font-size</span><span class="ch">:</span> <span class="dv">0.78</span><span class="dt">rem</span><span class="op">;</span></span>
+<span id="cb18-83"><a href="#cb18-83" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb18-84"><a href="#cb18-84" aria-hidden="true" tabindex="-1"></a><span class="fu">.table-note</span> {</span>
+<span id="cb18-85"><a href="#cb18-85" aria-hidden="true" tabindex="-1"></a>  <span class="kw">color</span><span class="ch">:</span> <span class="cn">#b8c0cc</span><span class="op">;</span></span>
+<span id="cb18-86"><a href="#cb18-86" aria-hidden="true" tabindex="-1"></a>  <span class="kw">font-size</span><span class="ch">:</span> <span class="dv">0.9</span><span class="dt">rem</span><span class="op">;</span></span>
+<span id="cb18-87"><a href="#cb18-87" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb18-88"><a href="#cb18-88" aria-hidden="true" tabindex="-1"></a><span class="fu">.dataframe</span> { <span class="kw">width</span><span class="ch">:</span> <span class="dv">100</span><span class="dt">%</span><span class="op">;</span> }</span>
+<span id="cb18-89"><a href="#cb18-89" aria-hidden="true" tabindex="-1"></a><span class="fu">.cell-output-display</span> { <span class="kw">overflow-x</span><span class="ch">:</span> <span class="bu">auto</span><span class="op">;</span> }</span>
+<span id="cb18-90"><a href="#cb18-90" aria-hidden="true" tabindex="-1"></a><span class="fu">.table</span><span class="op">,</span></span>
+<span id="cb18-91"><a href="#cb18-91" aria-hidden="true" tabindex="-1"></a>table<span class="op">,</span></span>
+<span id="cb18-92"><a href="#cb18-92" aria-hidden="true" tabindex="-1"></a><span class="fu">.dataframe</span> {</span>
+<span id="cb18-93"><a href="#cb18-93" aria-hidden="true" tabindex="-1"></a>  <span class="va">--bs-table-bg</span><span class="ch">:</span> <span class="cn">#10131a</span><span class="op">;</span></span>
+<span id="cb18-94"><a href="#cb18-94" aria-hidden="true" tabindex="-1"></a>  <span class="va">--bs-table-color</span><span class="ch">:</span> <span class="cn">#e8edf2</span><span class="op">;</span></span>
+<span id="cb18-95"><a href="#cb18-95" aria-hidden="true" tabindex="-1"></a>  <span class="va">--bs-table-striped-bg</span><span class="ch">:</span> <span class="cn">#151a23</span><span class="op">;</span></span>
+<span id="cb18-96"><a href="#cb18-96" aria-hidden="true" tabindex="-1"></a>  <span class="va">--bs-table-striped-color</span><span class="ch">:</span> <span class="cn">#e8edf2</span><span class="op">;</span></span>
+<span id="cb18-97"><a href="#cb18-97" aria-hidden="true" tabindex="-1"></a>  <span class="va">--bs-table-hover-bg</span><span class="ch">:</span> <span class="cn">#1b2230</span><span class="op">;</span></span>
+<span id="cb18-98"><a href="#cb18-98" aria-hidden="true" tabindex="-1"></a>  <span class="kw">color</span><span class="ch">:</span> <span class="cn">#e8edf2</span> <span class="at">!important</span><span class="op">;</span></span>
+<span id="cb18-99"><a href="#cb18-99" aria-hidden="true" tabindex="-1"></a>  <span class="kw">border-color</span><span class="ch">:</span> <span class="cn">#303746</span> <span class="at">!important</span><span class="op">;</span></span>
+<span id="cb18-100"><a href="#cb18-100" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb18-101"><a href="#cb18-101" aria-hidden="true" tabindex="-1"></a>thead<span class="op">,</span></span>
+<span id="cb18-102"><a href="#cb18-102" aria-hidden="true" tabindex="-1"></a>th {</span>
+<span id="cb18-103"><a href="#cb18-103" aria-hidden="true" tabindex="-1"></a>  <span class="kw">background</span><span class="ch">:</span> <span class="cn">#182030</span> <span class="at">!important</span><span class="op">;</span></span>
+<span id="cb18-104"><a href="#cb18-104" aria-hidden="true" tabindex="-1"></a>  <span class="kw">color</span><span class="ch">:</span> <span class="cn">#f2f6fb</span> <span class="at">!important</span><span class="op">;</span></span>
+<span id="cb18-105"><a href="#cb18-105" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb18-106"><a href="#cb18-106" aria-hidden="true" tabindex="-1"></a>td {</span>
+<span id="cb18-107"><a href="#cb18-107" aria-hidden="true" tabindex="-1"></a>  <span class="kw">color</span><span class="ch">:</span> <span class="cn">#e8edf2</span> <span class="at">!important</span><span class="op">;</span></span>
+<span id="cb18-108"><a href="#cb18-108" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb18-109"><a href="#cb18-109" aria-hidden="true" tabindex="-1"></a>pre<span class="op">,</span></span>
+<span id="cb18-110"><a href="#cb18-110" aria-hidden="true" tabindex="-1"></a>code<span class="op">,</span></span>
+<span id="cb18-111"><a href="#cb18-111" aria-hidden="true" tabindex="-1"></a><span class="fu">.sourceCode</span> {</span>
+<span id="cb18-112"><a href="#cb18-112" aria-hidden="true" tabindex="-1"></a>  <span class="kw">background-color</span><span class="ch">:</span> <span class="cn">#0d1117</span> <span class="at">!important</span><span class="op">;</span></span>
+<span id="cb18-113"><a href="#cb18-113" aria-hidden="true" tabindex="-1"></a>  <span class="kw">color</span><span class="ch">:</span> <span class="cn">#e6edf3</span> <span class="at">!important</span><span class="op">;</span></span>
+<span id="cb18-114"><a href="#cb18-114" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb18-115"><a href="#cb18-115" aria-hidden="true" tabindex="-1"></a><span class="fu">.diagram-block</span> {</span>
+<span id="cb18-116"><a href="#cb18-116" aria-hidden="true" tabindex="-1"></a>  <span class="kw">white-space</span><span class="ch">:</span> <span class="dv">pre</span><span class="op">;</span></span>
+<span id="cb18-117"><a href="#cb18-117" aria-hidden="true" tabindex="-1"></a>  <span class="kw">overflow-x</span><span class="ch">:</span> <span class="bu">auto</span><span class="op">;</span></span>
+<span id="cb18-118"><a href="#cb18-118" aria-hidden="true" tabindex="-1"></a>  <span class="kw">background</span><span class="ch">:</span> <span class="cn">#0d1117</span><span class="op">;</span></span>
+<span id="cb18-119"><a href="#cb18-119" aria-hidden="true" tabindex="-1"></a>  <span class="kw">color</span><span class="ch">:</span> <span class="cn">#9ad1ff</span><span class="op">;</span></span>
+<span id="cb18-120"><a href="#cb18-120" aria-hidden="true" tabindex="-1"></a>  <span class="kw">border</span><span class="ch">:</span> <span class="dv">1</span><span class="dt">px</span> <span class="dv">solid</span> <span class="cn">#30363d</span><span class="op">;</span></span>
+<span id="cb18-121"><a href="#cb18-121" aria-hidden="true" tabindex="-1"></a>  <span class="kw">border-radius</span><span class="ch">:</span> <span class="dv">4</span><span class="dt">px</span><span class="op">;</span></span>
+<span id="cb18-122"><a href="#cb18-122" aria-hidden="true" tabindex="-1"></a>  <span class="kw">padding</span><span class="ch">:</span> <span class="dv">1</span><span class="dt">rem</span><span class="op">;</span></span>
+<span id="cb18-123"><a href="#cb18-123" aria-hidden="true" tabindex="-1"></a>  <span class="kw">font-family</span><span class="ch">:</span> <span class="dv">ui-monospace</span><span class="op">,</span> <span class="dv">SFMono-Regular</span><span class="op">,</span> <span class="dv">Menlo</span><span class="op">,</span> <span class="dv">Consolas</span><span class="op">,</span> <span class="st">&quot;Liberation Mono&quot;</span><span class="op">,</span> <span class="dv">monospace</span><span class="op">;</span></span>
+<span id="cb18-124"><a href="#cb18-124" aria-hidden="true" tabindex="-1"></a>  <span class="kw">font-size</span><span class="ch">:</span> <span class="dv">0.9</span><span class="dt">rem</span><span class="op">;</span></span>
+<span id="cb18-125"><a href="#cb18-125" aria-hidden="true" tabindex="-1"></a>  <span class="kw">line-height</span><span class="ch">:</span> <span class="dv">1.45</span><span class="op">;</span></span>
+<span id="cb18-126"><a href="#cb18-126" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb18-127"><a href="#cb18-127" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">style</span><span class="dt">&gt;</span></span>
+<span id="cb18-128"><a href="#cb18-128" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-129"><a href="#cb18-129" aria-hidden="true" tabindex="-1"></a><span class="fu">## What this session covers</span></span>
+<span id="cb18-130"><a href="#cb18-130" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-131"><a href="#cb18-131" aria-hidden="true" tabindex="-1"></a>By the end of this notebook you will be able to pull two of the most-used datasets in</span>
+<span id="cb18-132"><a href="#cb18-132" aria-hidden="true" tabindex="-1"></a>accounting research from WRDS with code, and join them to the 10-K filings you already met:</span>
+<span id="cb18-133"><a href="#cb18-133" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-134"><a href="#cb18-134" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Compustat** (<span class="in">`comp`</span> library): yearly and quarterly numbers from financial statements (we use the annual data here).</span>
+<span id="cb18-135"><a href="#cb18-135" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**CRSP** (<span class="in">`crsp`</span> library): daily and monthly share prices, returns, and volume.</span>
+<span id="cb18-136"><a href="#cb18-136" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-137"><a href="#cb18-137" aria-hidden="true" tabindex="-1"></a>Your team project can lean on four data sources — the prepared **10-K filings**, the</span>
+<span id="cb18-138"><a href="#cb18-138" aria-hidden="true" tabindex="-1"></a>**EDGAR log files**, **Compustat**, and **CRSP**. This session is about the last two, and</span>
+<span id="cb18-139"><a href="#cb18-139" aria-hidden="true" tabindex="-1"></a>about getting all three into one data frame so you can attach financial controls and market reactions to a filing.</span>
+<span id="cb18-140"><a href="#cb18-140" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-141"><a href="#cb18-141" aria-hidden="true" tabindex="-1"></a><span class="fu">## Connecting to WRDS</span></span>
+<span id="cb18-142"><a href="#cb18-142" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-143"><a href="#cb18-143" aria-hidden="true" tabindex="-1"></a>WRDS hosts Compustat and CRSP on a PostgreSQL database. So we open a local **DuckDB** database and *attach* WRDS to it. DuckDB then becomes our single engine: it can read the remote WRDS tables, read the EDGAR parquet files, and join across them. Load the packages first.</span>
+<span id="cb18-144"><a href="#cb18-144" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-147"><a href="#cb18-147" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb18-148"><a href="#cb18-148" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: packages</span></span>
+<span id="cb18-149"><a href="#cb18-149" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb18-150"><a href="#cb18-150" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-151"><a href="#cb18-151" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> duckdb</span>
+<span id="cb18-152"><a href="#cb18-152" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb18-153"><a href="#cb18-153" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
+<span id="cb18-154"><a href="#cb18-154" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> bs4 <span class="im">import</span> BeautifulSoup</span>
+<span id="cb18-155"><a href="#cb18-155" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dotenv <span class="im">import</span> load_dotenv</span>
+<span id="cb18-156"><a href="#cb18-156" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-157"><a href="#cb18-157" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-158"><a href="#cb18-158" aria-hidden="true" tabindex="-1"></a><span class="fu">### Your credentials</span></span>
+<span id="cb18-159"><a href="#cb18-159" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-160"><a href="#cb18-160" aria-hidden="true" tabindex="-1"></a>Keep it in a <span class="in">`secrets.env`</span> file in the project root with two lines:</span>
+<span id="cb18-161"><a href="#cb18-161" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-162"><a href="#cb18-162" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-163"><a href="#cb18-163" aria-hidden="true" tabindex="-1"></a><span class="in">WRDS_USERNAME=your_wrds_id</span></span>
+<span id="cb18-164"><a href="#cb18-164" aria-hidden="true" tabindex="-1"></a><span class="in">WRDS_PASSWORD=your_wrds_password</span></span>
+<span id="cb18-165"><a href="#cb18-165" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-166"><a href="#cb18-166" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-167"><a href="#cb18-167" aria-hidden="true" tabindex="-1"></a>The repo ships <span class="in">`_secrets.env`</span> as an empty template — copy it to <span class="in">`secrets.env`</span> and fill in</span>
+<span id="cb18-168"><a href="#cb18-168" aria-hidden="true" tabindex="-1"></a>your details. <span class="in">`secrets.env`</span> is in <span class="in">`.gitignore`</span>, so git will not commit it. We read it with</span>
+<span id="cb18-169"><a href="#cb18-169" aria-hidden="true" tabindex="-1"></a><span class="in">`python-dotenv`</span>.</span>
+<span id="cb18-170"><a href="#cb18-170" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-173"><a href="#cb18-173" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb18-174"><a href="#cb18-174" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: load-secrets</span></span>
+<span id="cb18-175"><a href="#cb18-175" aria-hidden="true" tabindex="-1"></a>load_dotenv(<span class="st">&quot;../secrets.env&quot;</span>)</span>
+<span id="cb18-176"><a href="#cb18-176" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-177"><a href="#cb18-177" aria-hidden="true" tabindex="-1"></a>wrds_user <span class="op">=</span> os.getenv(<span class="st">&quot;WRDS_USERNAME&quot;</span>)</span>
+<span id="cb18-178"><a href="#cb18-178" aria-hidden="true" tabindex="-1"></a>wrds_pass <span class="op">=</span> os.getenv(<span class="st">&quot;WRDS_PASSWORD&quot;</span>)</span>
+<span id="cb18-179"><a href="#cb18-179" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-180"><a href="#cb18-180" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> wrds_user <span class="kw">and</span> wrds_pass, <span class="st">&quot;Set WRDS_USERNAME and WRDS_PASSWORD in secrets.env&quot;</span></span>
+<span id="cb18-181"><a href="#cb18-181" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-182"><a href="#cb18-182" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-183"><a href="#cb18-183" aria-hidden="true" tabindex="-1"></a><span class="fu">### Open DuckDB and attach WRDS</span></span>
+<span id="cb18-184"><a href="#cb18-184" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-187"><a href="#cb18-187" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb18-188"><a href="#cb18-188" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: wrds-connect</span></span>
+<span id="cb18-189"><a href="#cb18-189" aria-hidden="true" tabindex="-1"></a>con <span class="op">=</span> duckdb.<span class="ex">connect</span>()</span>
+<span id="cb18-190"><a href="#cb18-190" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-191"><a href="#cb18-191" aria-hidden="true" tabindex="-1"></a>con.execute(<span class="st">&quot;INSTALL postgres;&quot;</span>)</span>
+<span id="cb18-192"><a href="#cb18-192" aria-hidden="true" tabindex="-1"></a>con.execute(<span class="st">&quot;LOAD postgres;&quot;</span>)</span>
+<span id="cb18-193"><a href="#cb18-193" aria-hidden="true" tabindex="-1"></a>con.execute(<span class="st">&quot;SET pg_connection_limit=4;&quot;</span>)</span>
+<span id="cb18-194"><a href="#cb18-194" aria-hidden="true" tabindex="-1"></a>con.execute(</span>
+<span id="cb18-195"><a href="#cb18-195" aria-hidden="true" tabindex="-1"></a>    <span class="ss">f&quot;ATTACH &#39;dbname=wrds host=wrds-pgdata.wharton.upenn.edu port=9737 &quot;</span></span>
+<span id="cb18-196"><a href="#cb18-196" aria-hidden="true" tabindex="-1"></a>    <span class="ss">f&quot;user=</span><span class="sc">{</span>wrds_user<span class="sc">}</span><span class="ss"> password=</span><span class="sc">{</span>wrds_pass<span class="sc">}</span><span class="ss">&#39; AS wrds (TYPE postgres, READ_ONLY)&quot;</span></span>
+<span id="cb18-197"><a href="#cb18-197" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb18-198"><a href="#cb18-198" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-199"><a href="#cb18-199" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-200"><a href="#cb18-200" aria-hidden="true" tabindex="-1"></a>Check it worked. This just asks DuckDB which databases are attached — it returns instantly without touching WRDS. After attaching, WRDS tables are addressed as <span class="in">`wrds.&lt;library&gt;.&lt;table&gt;`</span>, for example <span class="in">`wrds.comp.company`</span>.</span>
+<span id="cb18-201"><a href="#cb18-201" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-204"><a href="#cb18-204" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb18-205"><a href="#cb18-205" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: wrds-check</span></span>
+<span id="cb18-206"><a href="#cb18-206" aria-hidden="true" tabindex="-1"></a>con.execute(</span>
+<span id="cb18-207"><a href="#cb18-207" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;SELECT database_name FROM duckdb_databases() WHERE database_name = &#39;wrds&#39;&quot;</span></span>
+<span id="cb18-208"><a href="#cb18-208" aria-hidden="true" tabindex="-1"></a>).fetchdf()</span>
+<span id="cb18-209"><a href="#cb18-209" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-210"><a href="#cb18-210" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-211"><a href="#cb18-211" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> class</span><span class="op">=</span><span class="st">&quot;info-card&quot;</span><span class="dt">&gt;</span></span>
+<span id="cb18-212"><a href="#cb18-212" aria-hidden="true" tabindex="-1"></a>To see what&#39;s available on WRDS, the command <span class="dt">&lt;</span><span class="kw">code</span><span class="dt">&gt;</span>SHOW ALL TABLES<span class="dt">&lt;/</span><span class="kw">code</span><span class="dt">&gt;</span> lists every</span>
+<span id="cb18-213"><a href="#cb18-213" aria-hidden="true" tabindex="-1"></a>library and table (it&#39;s long, so we don&#39;t print it here).</span>
+<span id="cb18-214"><a href="#cb18-214" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
+<span id="cb18-215"><a href="#cb18-215" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-216"><a href="#cb18-216" aria-hidden="true" tabindex="-1"></a><span class="fu">## Compustat and CRSP</span></span>
+<span id="cb18-217"><a href="#cb18-217" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-218"><a href="#cb18-218" aria-hidden="true" tabindex="-1"></a>We query WRDS by building SQL strings and running them with <span class="in">`con.execute(...).fetchdf()`</span>.</span>
+<span id="cb18-219"><a href="#cb18-219" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-220"><a href="#cb18-220" aria-hidden="true" tabindex="-1"></a><span class="fu">### Compustat: company information (`comp.company`)</span></span>
+<span id="cb18-221"><a href="#cb18-221" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-222"><a href="#cb18-222" aria-hidden="true" tabindex="-1"></a><span class="in">`comp.company`</span> has one row per firm, keyed by **GVKEY** (Compustat&#39;s permanent firm id). It  also carries each firm&#39;s **CIK** — the SEC&#39;s id — which we use later to reach the filings.</span>
+<span id="cb18-223"><a href="#cb18-223" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-226"><a href="#cb18-226" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb18-227"><a href="#cb18-227" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: comp-company</span></span>
+<span id="cb18-228"><a href="#cb18-228" aria-hidden="true" tabindex="-1"></a>company_q <span class="op">=</span> <span class="st">&quot;&quot;&quot;</span></span>
+<span id="cb18-229"><a href="#cb18-229" aria-hidden="true" tabindex="-1"></a><span class="st">  SELECT gvkey, conm, cik, sic, state</span></span>
+<span id="cb18-230"><a href="#cb18-230" aria-hidden="true" tabindex="-1"></a><span class="st">  FROM wrds.comp.company</span></span>
+<span id="cb18-231"><a href="#cb18-231" aria-hidden="true" tabindex="-1"></a><span class="st">  WHERE conm LIKE &#39;A%&#39;</span></span>
+<span id="cb18-232"><a href="#cb18-232" aria-hidden="true" tabindex="-1"></a><span class="st">  ORDER BY conm</span></span>
+<span id="cb18-233"><a href="#cb18-233" aria-hidden="true" tabindex="-1"></a><span class="st">  LIMIT 5</span></span>
+<span id="cb18-234"><a href="#cb18-234" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;&quot;&quot;</span></span>
+<span id="cb18-235"><a href="#cb18-235" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-236"><a href="#cb18-236" aria-hidden="true" tabindex="-1"></a>con.execute(company_q).fetchdf()</span>
+<span id="cb18-237"><a href="#cb18-237" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-238"><a href="#cb18-238" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-239"><a href="#cb18-239" aria-hidden="true" tabindex="-1"></a><span class="fu">### Compustat: yearly financials (`comp.funda`)</span></span>
+<span id="cb18-240"><a href="#cb18-240" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-241"><a href="#cb18-241" aria-hidden="true" tabindex="-1"></a><span class="in">`comp.funda`</span> holds the annual income statement, balance sheet, and cash-flow items.</span>
+<span id="cb18-242"><a href="#cb18-242" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-245"><a href="#cb18-245" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb18-246"><a href="#cb18-246" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: comp-funda</span></span>
+<span id="cb18-247"><a href="#cb18-247" aria-hidden="true" tabindex="-1"></a>cs_filter <span class="op">=</span> (<span class="st">&quot;consol = &#39;C&#39; and (indfmt = &#39;INDL&#39; or indfmt = &#39;FS&#39;) &quot;</span></span>
+<span id="cb18-248"><a href="#cb18-248" aria-hidden="true" tabindex="-1"></a>             <span class="st">&quot;and datafmt = &#39;STD&#39; and popsrc = &#39;D&#39;&quot;</span>)</span>
+<span id="cb18-249"><a href="#cb18-249" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-250"><a href="#cb18-250" aria-hidden="true" tabindex="-1"></a>funda_q <span class="op">=</span> <span class="ss">f&#39;&#39;&#39;</span></span>
+<span id="cb18-251"><a href="#cb18-251" aria-hidden="true" tabindex="-1"></a><span class="ss">  SELECT gvkey, datadate, fyear,</span></span>
+<span id="cb18-252"><a href="#cb18-252" aria-hidden="true" tabindex="-1"></a><span class="ss">         &quot;at&quot;, sale, ni, ceq, prcc_f, csho</span></span>
+<span id="cb18-253"><a href="#cb18-253" aria-hidden="true" tabindex="-1"></a><span class="ss">  FROM wrds.comp.funda</span></span>
+<span id="cb18-254"><a href="#cb18-254" aria-hidden="true" tabindex="-1"></a><span class="ss">  WHERE </span><span class="sc">{</span>cs_filter<span class="sc">}</span></span>
+<span id="cb18-255"><a href="#cb18-255" aria-hidden="true" tabindex="-1"></a><span class="ss">  LIMIT 5</span></span>
+<span id="cb18-256"><a href="#cb18-256" aria-hidden="true" tabindex="-1"></a><span class="ss">&#39;&#39;&#39;</span></span>
+<span id="cb18-257"><a href="#cb18-257" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-258"><a href="#cb18-258" aria-hidden="true" tabindex="-1"></a>con.execute(funda_q).fetchdf()</span>
+<span id="cb18-259"><a href="#cb18-259" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-260"><a href="#cb18-260" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-261"><a href="#cb18-261" aria-hidden="true" tabindex="-1"></a>We can take a quick look at the data — for instance, how many firm-years there are per decade.</span>
+<span id="cb18-262"><a href="#cb18-262" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-265"><a href="#cb18-265" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb18-266"><a href="#cb18-266" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: comp-funda-counts</span></span>
+<span id="cb18-267"><a href="#cb18-267" aria-hidden="true" tabindex="-1"></a>counts_q <span class="op">=</span> <span class="ss">f&#39;&#39;&#39;</span></span>
+<span id="cb18-268"><a href="#cb18-268" aria-hidden="true" tabindex="-1"></a><span class="ss">  SELECT CAST(floor(fyear / 10) * 10 AS INTEGER) AS decade, COUNT(*) AS n</span></span>
+<span id="cb18-269"><a href="#cb18-269" aria-hidden="true" tabindex="-1"></a><span class="ss">  FROM wrds.comp.funda</span></span>
+<span id="cb18-270"><a href="#cb18-270" aria-hidden="true" tabindex="-1"></a><span class="ss">  WHERE </span><span class="sc">{</span>cs_filter<span class="sc">}</span></span>
+<span id="cb18-271"><a href="#cb18-271" aria-hidden="true" tabindex="-1"></a><span class="ss">  GROUP BY decade</span></span>
+<span id="cb18-272"><a href="#cb18-272" aria-hidden="true" tabindex="-1"></a><span class="ss">  ORDER BY decade</span></span>
+<span id="cb18-273"><a href="#cb18-273" aria-hidden="true" tabindex="-1"></a><span class="ss">&#39;&#39;&#39;</span></span>
+<span id="cb18-274"><a href="#cb18-274" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-275"><a href="#cb18-275" aria-hidden="true" tabindex="-1"></a>con.execute(counts_q).fetchdf()</span>
+<span id="cb18-276"><a href="#cb18-276" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-277"><a href="#cb18-277" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-278"><a href="#cb18-278" aria-hidden="true" tabindex="-1"></a><span class="fu">### CRSP: prices, returns, and volume</span></span>
+<span id="cb18-279"><a href="#cb18-279" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-280"><a href="#cb18-280" aria-hidden="true" tabindex="-1"></a>CRSP holds daily and monthly market data for US-listed stocks. Its id is **PERMNO** (one</span>
+<span id="cb18-281"><a href="#cb18-281" aria-hidden="true" tabindex="-1"></a>per security); **PERMCO** is the company-level id. CRSP does **not** use GVKEY — that gap is</span>
+<span id="cb18-282"><a href="#cb18-282" aria-hidden="true" tabindex="-1"></a>what the CCM link table (below) closes. First, a lookup from ticker to PERMNO:</span>
+<span id="cb18-283"><a href="#cb18-283" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-286"><a href="#cb18-286" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb18-287"><a href="#cb18-287" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: crsp-stocknames</span></span>
+<span id="cb18-288"><a href="#cb18-288" aria-hidden="true" tabindex="-1"></a>names_q <span class="op">=</span> <span class="st">&quot;&quot;&quot;</span></span>
+<span id="cb18-289"><a href="#cb18-289" aria-hidden="true" tabindex="-1"></a><span class="st">  SELECT permno, comnam, ticker, namedt, nameenddt</span></span>
+<span id="cb18-290"><a href="#cb18-290" aria-hidden="true" tabindex="-1"></a><span class="st">  FROM wrds.crsp.stocknames</span></span>
+<span id="cb18-291"><a href="#cb18-291" aria-hidden="true" tabindex="-1"></a><span class="st">  WHERE ticker = &#39;AAPL&#39;</span></span>
+<span id="cb18-292"><a href="#cb18-292" aria-hidden="true" tabindex="-1"></a><span class="st">  LIMIT 5</span></span>
+<span id="cb18-293"><a href="#cb18-293" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;&quot;&quot;</span></span>
+<span id="cb18-294"><a href="#cb18-294" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-295"><a href="#cb18-295" aria-hidden="true" tabindex="-1"></a>con.execute(names_q).fetchdf()</span>
+<span id="cb18-296"><a href="#cb18-296" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-297"><a href="#cb18-297" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-298"><a href="#cb18-298" aria-hidden="true" tabindex="-1"></a>The daily stock file is <span class="in">`crsp.dsf`</span>; the matching market index is <span class="in">`crsp.dsi`</span>, which carries</span>
+<span id="cb18-299"><a href="#cb18-299" aria-hidden="true" tabindex="-1"></a>the value-weighted market return <span class="in">`vwretd`</span> (the benchmark for computing &quot;abnormal&quot; returns).</span>
+<span id="cb18-300"><a href="#cb18-300" aria-hidden="true" tabindex="-1"></a>There are monthly twins, <span class="in">`crsp.msf`</span> and <span class="in">`crsp.msi`</span>, for longer horizons.</span>
+<span id="cb18-301"><a href="#cb18-301" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-304"><a href="#cb18-304" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb18-305"><a href="#cb18-305" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: crsp-dsf</span></span>
+<span id="cb18-306"><a href="#cb18-306" aria-hidden="true" tabindex="-1"></a>dsf_q <span class="op">=</span> <span class="st">&quot;&quot;&quot;</span></span>
+<span id="cb18-307"><a href="#cb18-307" aria-hidden="true" tabindex="-1"></a><span class="st">  SELECT permno, date, ret, retx, prc, vol, shrout</span></span>
+<span id="cb18-308"><a href="#cb18-308" aria-hidden="true" tabindex="-1"></a><span class="st">  FROM wrds.crsp.dsf</span></span>
+<span id="cb18-309"><a href="#cb18-309" aria-hidden="true" tabindex="-1"></a><span class="st">  WHERE permno = 14593 AND date &gt;= DATE &#39;2020-01-01&#39;</span></span>
+<span id="cb18-310"><a href="#cb18-310" aria-hidden="true" tabindex="-1"></a><span class="st">  LIMIT 5</span></span>
+<span id="cb18-311"><a href="#cb18-311" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;&quot;&quot;</span></span>
+<span id="cb18-312"><a href="#cb18-312" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-313"><a href="#cb18-313" aria-hidden="true" tabindex="-1"></a>con.execute(dsf_q).fetchdf()</span>
+<span id="cb18-314"><a href="#cb18-314" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-315"><a href="#cb18-315" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-316"><a href="#cb18-316" aria-hidden="true" tabindex="-1"></a><span class="fu">## Linking the databases</span></span>
+<span id="cb18-317"><a href="#cb18-317" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-318"><a href="#cb18-318" aria-hidden="true" tabindex="-1"></a>We have three datasets, each with its own identifier:</span>
+<span id="cb18-319"><a href="#cb18-319" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-320"><a href="#cb18-320" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Dataset <span class="pp">|</span> Its identifier <span class="pp">|</span></span>
+<span id="cb18-321"><a href="#cb18-321" aria-hidden="true" tabindex="-1"></a><span class="pp">|---|---|</span></span>
+<span id="cb18-322"><a href="#cb18-322" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 10-K filings (EDGAR) <span class="pp">|</span> CIK <span class="pp">|</span></span>
+<span id="cb18-323"><a href="#cb18-323" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Compustat (<span class="in">`comp`</span>) <span class="pp">|</span> GVKEY <span class="pp">|</span></span>
+<span id="cb18-324"><a href="#cb18-324" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> CRSP (<span class="in">`crsp`</span>) <span class="pp">|</span> PERMNO <span class="pp">|</span></span>
+<span id="cb18-325"><a href="#cb18-325" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-326"><a href="#cb18-326" aria-hidden="true" tabindex="-1"></a>We need two bridges: GVKEY ↔ PERMNO (to add returns to fundamentals) and CIK ↔ GVKEY (to</span>
+<span id="cb18-327"><a href="#cb18-327" aria-hidden="true" tabindex="-1"></a>attach both to a filing). Because everything lives in one DuckDB connection, we build each</span>
+<span id="cb18-328"><a href="#cb18-328" aria-hidden="true" tabindex="-1"></a>bridge as a **view** and join them in SQL.</span>
+<span id="cb18-329"><a href="#cb18-329" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-330"><a href="#cb18-330" aria-hidden="true" tabindex="-1"></a><span class="fu">### CRSP ↔ Compustat: the CCM link</span></span>
+<span id="cb18-331"><a href="#cb18-331" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-332"><a href="#cb18-332" aria-hidden="true" tabindex="-1"></a>WRDS ships the **CRSP/Compustat Merged** link in <span class="in">`crsp.ccmxpf_lnkhist`</span>. Each row maps a <span class="in">`gvkey`</span> to a PERMNO (<span class="in">`lpermno`</span>) valid over <span class="in">`[linkdt, linkenddt]`</span>. We keep only clean links — link types <span class="in">`LC`</span>/<span class="in">`LU`</span>/<span class="in">`LS`</span> and primary markers <span class="in">`C`</span>/<span class="in">`P`</span> — and fill a missing <span class="in">`linkenddt`</span> (meaning &quot;still valid&quot;) with the latest end date in the table so the date comparison works.</span>
+<span id="cb18-333"><a href="#cb18-333" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-336"><a href="#cb18-336" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb18-337"><a href="#cb18-337" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: ccm-build</span></span>
+<span id="cb18-338"><a href="#cb18-338" aria-hidden="true" tabindex="-1"></a>con.execute(<span class="st">&quot;&quot;&quot;</span></span>
+<span id="cb18-339"><a href="#cb18-339" aria-hidden="true" tabindex="-1"></a><span class="st">  CREATE OR REPLACE VIEW ccm_link AS</span></span>
+<span id="cb18-340"><a href="#cb18-340" aria-hidden="true" tabindex="-1"></a><span class="st">  SELECT gvkey,</span></span>
+<span id="cb18-341"><a href="#cb18-341" aria-hidden="true" tabindex="-1"></a><span class="st">         lpermno AS permno,</span></span>
+<span id="cb18-342"><a href="#cb18-342" aria-hidden="true" tabindex="-1"></a><span class="st">         lpermco AS permco,</span></span>
+<span id="cb18-343"><a href="#cb18-343" aria-hidden="true" tabindex="-1"></a><span class="st">         linkdt,</span></span>
+<span id="cb18-344"><a href="#cb18-344" aria-hidden="true" tabindex="-1"></a><span class="st">         COALESCE(linkenddt, MAX(linkenddt) OVER ()) AS linkenddt</span></span>
+<span id="cb18-345"><a href="#cb18-345" aria-hidden="true" tabindex="-1"></a><span class="st">  FROM wrds.crsp.ccmxpf_lnkhist</span></span>
+<span id="cb18-346"><a href="#cb18-346" aria-hidden="true" tabindex="-1"></a><span class="st">  WHERE linktype IN (&#39;LC&#39;, &#39;LU&#39;, &#39;LS&#39;)</span></span>
+<span id="cb18-347"><a href="#cb18-347" aria-hidden="true" tabindex="-1"></a><span class="st">    AND linkprim IN (&#39;C&#39;, &#39;P&#39;)</span></span>
+<span id="cb18-348"><a href="#cb18-348" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;&quot;&quot;</span>)</span>
+<span id="cb18-349"><a href="#cb18-349" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-350"><a href="#cb18-350" aria-hidden="true" tabindex="-1"></a>con.execute(<span class="st">&quot;SELECT * FROM ccm_link LIMIT 5&quot;</span>).fetchdf()</span>
+<span id="cb18-351"><a href="#cb18-351" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-352"><a href="#cb18-352" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-353"><a href="#cb18-353" aria-hidden="true" tabindex="-1"></a><span class="fu">### EDGAR ↔ Compustat: matching on CIK</span></span>
+<span id="cb18-354"><a href="#cb18-354" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-355"><a href="#cb18-355" aria-hidden="true" tabindex="-1"></a>A 10-K filing is identified by its **CIK**. The simplest bridge to Compustat is the <span class="in">`cik`</span></span>
+<span id="cb18-356"><a href="#cb18-356" aria-hidden="true" tabindex="-1"></a>column already in <span class="in">`comp.company`</span>. We cast it to an integer.</span>
+<span id="cb18-357"><a href="#cb18-357" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-360"><a href="#cb18-360" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb18-361"><a href="#cb18-361" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: cik-gvkey</span></span>
+<span id="cb18-362"><a href="#cb18-362" aria-hidden="true" tabindex="-1"></a>con.execute(<span class="st">&quot;&quot;&quot;</span></span>
+<span id="cb18-363"><a href="#cb18-363" aria-hidden="true" tabindex="-1"></a><span class="st">  CREATE OR REPLACE VIEW cik_gvkey AS</span></span>
+<span id="cb18-364"><a href="#cb18-364" aria-hidden="true" tabindex="-1"></a><span class="st">  SELECT DISTINCT CAST(cik AS INTEGER) AS cik, gvkey</span></span>
+<span id="cb18-365"><a href="#cb18-365" aria-hidden="true" tabindex="-1"></a><span class="st">  FROM wrds.comp.company</span></span>
+<span id="cb18-366"><a href="#cb18-366" aria-hidden="true" tabindex="-1"></a><span class="st">  WHERE cik IS NOT NULL</span></span>
+<span id="cb18-367"><a href="#cb18-367" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;&quot;&quot;</span>)</span>
+<span id="cb18-368"><a href="#cb18-368" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-369"><a href="#cb18-369" aria-hidden="true" tabindex="-1"></a>con.execute(<span class="st">&quot;SELECT * FROM cik_gvkey LIMIT 5&quot;</span>).fetchdf()</span>
+<span id="cb18-370"><a href="#cb18-370" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-371"><a href="#cb18-371" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-372"><a href="#cb18-372" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> class</span><span class="op">=</span><span class="st">&quot;info-card&quot;</span><span class="dt">&gt;</span></span>
+<span id="cb18-373"><a href="#cb18-373" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">b</span><span class="dt">&gt;</span>Watch the type.<span class="dt">&lt;/</span><span class="kw">b</span><span class="dt">&gt;</span> Compustat stores <span class="dt">&lt;</span><span class="kw">code</span><span class="dt">&gt;</span>cik<span class="dt">&lt;/</span><span class="kw">code</span><span class="dt">&gt;</span> as zero-padded text</span>
+<span id="cb18-374"><a href="#cb18-374" aria-hidden="true" tabindex="-1"></a>(<span class="dt">&lt;</span><span class="kw">code</span><span class="dt">&gt;</span>&quot;0000320193&quot;<span class="dt">&lt;/</span><span class="kw">code</span><span class="dt">&gt;</span>) while the EDGAR data stores it as a number</span>
+<span id="cb18-375"><a href="#cb18-375" aria-hidden="true" tabindex="-1"></a>(<span class="dt">&lt;</span><span class="kw">code</span><span class="dt">&gt;</span>320193<span class="dt">&lt;/</span><span class="kw">code</span><span class="dt">&gt;</span>). Join text to a number and you silently get <span class="dt">&lt;</span><span class="kw">i</span><span class="dt">&gt;</span>zero<span class="dt">&lt;/</span><span class="kw">i</span><span class="dt">&gt;</span> matches, so we</span>
+<span id="cb18-376"><a href="#cb18-376" aria-hidden="true" tabindex="-1"></a>cast both sides to integer.</span>
+<span id="cb18-377"><a href="#cb18-377" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
+<span id="cb18-378"><a href="#cb18-378" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-379"><a href="#cb18-379" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> class</span><span class="op">=</span><span class="st">&quot;info-card&quot;</span><span class="dt">&gt;</span></span>
+<span id="cb18-380"><a href="#cb18-380" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">b</span><span class="dt">&gt;</span>One limitation: <span class="dt">&lt;/</span><span class="kw">b</span><span class="dt">&gt;</span> <span class="dt">&lt;</span><span class="kw">code</span><span class="dt">&gt;</span>comp.company<span class="dt">&lt;/</span><span class="kw">code</span><span class="dt">&gt;</span> keeps only the firm&#39;s</span>
+<span id="cb18-381"><a href="#cb18-381" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">i</span><span class="dt">&gt;</span>current<span class="dt">&lt;/</span><span class="kw">i</span><span class="dt">&gt;</span> CIK. A firm that changed CIK over time (often after a restructuring) may miss</span>
+<span id="cb18-382"><a href="#cb18-382" aria-hidden="true" tabindex="-1"></a>its older filings. <span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
+<span id="cb18-383"><a href="#cb18-383" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-384"><a href="#cb18-384" aria-hidden="true" tabindex="-1"></a><span class="fu">### Bringing in the 10-K filings</span></span>
+<span id="cb18-385"><a href="#cb18-385" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-386"><a href="#cb18-386" aria-hidden="true" tabindex="-1"></a>The 10-K data are the parquet files from <span class="in">`edgar_10k_intro_python.qmd`</span>, read with DuckDB over HTTPS.</span>
+<span id="cb18-387"><a href="#cb18-387" aria-hidden="true" tabindex="-1"></a>Because they live in the **same** <span class="in">`con`</span> that has WRDS attached, we can join filings to</span>
+<span id="cb18-388"><a href="#cb18-388" aria-hidden="true" tabindex="-1"></a>Compustat and CRSP directly. We expose just the linking columns and cast <span class="in">`cik`</span> to integer.</span>
+<span id="cb18-389"><a href="#cb18-389" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-392"><a href="#cb18-392" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb18-393"><a href="#cb18-393" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: edgar-view</span></span>
+<span id="cb18-394"><a href="#cb18-394" aria-hidden="true" tabindex="-1"></a>BASE_URL <span class="op">=</span> <span class="st">&quot;https://trr266.wiwi.hu-berlin.de/edgar_10k_apr26/&quot;</span></span>
+<span id="cb18-395"><a href="#cb18-395" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-396"><a href="#cb18-396" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-397"><a href="#cb18-397" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> list_parquet_files(base_url):</span>
+<span id="cb18-398"><a href="#cb18-398" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> requests.get(base_url, timeout<span class="op">=</span><span class="dv">60</span>)</span>
+<span id="cb18-399"><a href="#cb18-399" aria-hidden="true" tabindex="-1"></a>    response.raise_for_status()</span>
+<span id="cb18-400"><a href="#cb18-400" aria-hidden="true" tabindex="-1"></a>    soup <span class="op">=</span> BeautifulSoup(response.text, <span class="st">&quot;html.parser&quot;</span>)</span>
+<span id="cb18-401"><a href="#cb18-401" aria-hidden="true" tabindex="-1"></a>    files <span class="op">=</span> []</span>
+<span id="cb18-402"><a href="#cb18-402" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> anchor <span class="kw">in</span> soup.find_all(<span class="st">&quot;a&quot;</span>):</span>
+<span id="cb18-403"><a href="#cb18-403" aria-hidden="true" tabindex="-1"></a>        href <span class="op">=</span> anchor.get(<span class="st">&quot;href&quot;</span>)</span>
+<span id="cb18-404"><a href="#cb18-404" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> href <span class="kw">and</span> href.lower().endswith(<span class="st">&quot;.parquet&quot;</span>):</span>
+<span id="cb18-405"><a href="#cb18-405" aria-hidden="true" tabindex="-1"></a>            files.append(base_url <span class="op">+</span> href)</span>
+<span id="cb18-406"><a href="#cb18-406" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">sorted</span>(files)</span>
+<span id="cb18-407"><a href="#cb18-407" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-408"><a href="#cb18-408" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-409"><a href="#cb18-409" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> duckdb_list_literal(urls):</span>
+<span id="cb18-410"><a href="#cb18-410" aria-hidden="true" tabindex="-1"></a>    escaped <span class="op">=</span> [url.replace(<span class="st">&quot;&#39;&quot;</span>, <span class="st">&quot;&#39;&#39;&quot;</span>) <span class="cf">for</span> url <span class="kw">in</span> urls]</span>
+<span id="cb18-411"><a href="#cb18-411" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="st">&quot;[&#39;&quot;</span> <span class="op">+</span> <span class="st">&quot;&#39;,&#39;&quot;</span>.join(escaped) <span class="op">+</span> <span class="st">&quot;&#39;]&quot;</span></span>
+<span id="cb18-412"><a href="#cb18-412" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-413"><a href="#cb18-413" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-414"><a href="#cb18-414" aria-hidden="true" tabindex="-1"></a>con.execute(<span class="st">&quot;INSTALL httpfs;&quot;</span>)</span>
+<span id="cb18-415"><a href="#cb18-415" aria-hidden="true" tabindex="-1"></a>con.execute(<span class="st">&quot;LOAD httpfs;&quot;</span>)</span>
+<span id="cb18-416"><a href="#cb18-416" aria-hidden="true" tabindex="-1"></a>con.execute(<span class="st">&quot;SET enable_http_metadata_cache = true;&quot;</span>)</span>
+<span id="cb18-417"><a href="#cb18-417" aria-hidden="true" tabindex="-1"></a>file_list <span class="op">=</span> duckdb_list_literal(list_parquet_files(BASE_URL))</span>
+<span id="cb18-418"><a href="#cb18-418" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-419"><a href="#cb18-419" aria-hidden="true" tabindex="-1"></a>con.execute(<span class="ss">f&quot;&quot;&quot;</span></span>
+<span id="cb18-420"><a href="#cb18-420" aria-hidden="true" tabindex="-1"></a><span class="ss">  CREATE OR REPLACE VIEW edgar_10k AS</span></span>
+<span id="cb18-421"><a href="#cb18-421" aria-hidden="true" tabindex="-1"></a><span class="ss">  SELECT TRY_CAST(cik AS INTEGER) AS cik,</span></span>
+<span id="cb18-422"><a href="#cb18-422" aria-hidden="true" tabindex="-1"></a><span class="ss">         accessionNumber,</span></span>
+<span id="cb18-423"><a href="#cb18-423" aria-hidden="true" tabindex="-1"></a><span class="ss">         CAST(filingDate AS DATE) AS filingDate,</span></span>
+<span id="cb18-424"><a href="#cb18-424" aria-hidden="true" tabindex="-1"></a><span class="ss">         form</span></span>
+<span id="cb18-425"><a href="#cb18-425" aria-hidden="true" tabindex="-1"></a><span class="ss">  FROM parquet_scan(</span><span class="sc">{</span>file_list<span class="sc">}</span><span class="ss">, filename = true, union_by_name = true)</span></span>
+<span id="cb18-426"><a href="#cb18-426" aria-hidden="true" tabindex="-1"></a><span class="ss">&quot;&quot;&quot;</span>)</span>
+<span id="cb18-427"><a href="#cb18-427" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-428"><a href="#cb18-428" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-429"><a href="#cb18-429" aria-hidden="true" tabindex="-1"></a>Now build the linked sample in one SQL join: filings → CIK → GVKEY → PERMNO, requiring the</span>
+<span id="cb18-430"><a href="#cb18-430" aria-hidden="true" tabindex="-1"></a>filing date to fall inside the CCM link window.</span>
+<span id="cb18-431"><a href="#cb18-431" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-434"><a href="#cb18-434" aria-hidden="true" tabindex="-1"></a><span class="in">```{mermaid}</span></span>
+<span id="cb18-435"><a href="#cb18-435" aria-hidden="true" tabindex="-1"></a>%%| label: <span class="fu">link</span>-diagram</span>
+<span id="cb18-436"><a href="#cb18-436" aria-hidden="true" tabindex="-1"></a>%%| echo: false</span>
+<span id="cb18-437"><a href="#cb18-437" aria-hidden="true" tabindex="-1"></a>flowchart LR</span>
+<span id="cb18-438"><a href="#cb18-438" aria-hidden="true" tabindex="-1"></a>    E[<span class="ot">&quot;</span><span class="st">10-K filings&lt;br/&gt;(CIK)&lt;br/&gt;&lt;i&gt;text / metadata&lt;/i&gt;</span><span class="ot">&quot;</span>]</span>
+<span id="cb18-439"><a href="#cb18-439" aria-hidden="true" tabindex="-1"></a>    C[<span class="ot">&quot;</span><span class="st">Compustat&lt;br/&gt;(GVKEY)&lt;br/&gt;&lt;i&gt;financials&lt;/i&gt;</span><span class="ot">&quot;</span>]</span>
+<span id="cb18-440"><a href="#cb18-440" aria-hidden="true" tabindex="-1"></a>    R[<span class="ot">&quot;</span><span class="st">CRSP&lt;br/&gt;(PERMNO)&lt;br/&gt;&lt;i&gt;returns&lt;/i&gt;</span><span class="ot">&quot;</span>]</span>
+<span id="cb18-441"><a href="#cb18-441" aria-hidden="true" tabindex="-1"></a>    E ---|<span class="ot">&quot;</span><span class="st">cik_gvkey&lt;br/&gt;CIK</span><span class="ot">&quot;</span>| C</span>
+<span id="cb18-442"><a href="#cb18-442" aria-hidden="true" tabindex="-1"></a>    C ---|<span class="ot">&quot;</span><span class="st">ccm_link&lt;br/&gt;GVKEY ↔ PERMNO</span><span class="ot">&quot;</span>| R</span>
+<span id="cb18-443"><a href="#cb18-443" aria-hidden="true" tabindex="-1"></a>    classDef hub fill:<span class="co">#1b8a8f,stroke:#7cc7ff,color:#ffffff;</span></span>
+<span id="cb18-444"><a href="#cb18-444" aria-hidden="true" tabindex="-1"></a>    class C hub;</span>
+<span id="cb18-445"><a href="#cb18-445" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-446"><a href="#cb18-446" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-449"><a href="#cb18-449" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb18-450"><a href="#cb18-450" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: linked-sample</span></span>
+<span id="cb18-451"><a href="#cb18-451" aria-hidden="true" tabindex="-1"></a>con.execute(<span class="st">&quot;&quot;&quot;</span></span>
+<span id="cb18-452"><a href="#cb18-452" aria-hidden="true" tabindex="-1"></a><span class="st">  CREATE OR REPLACE TEMP TABLE linked_sample AS</span></span>
+<span id="cb18-453"><a href="#cb18-453" aria-hidden="true" tabindex="-1"></a><span class="st">  SELECT e.cik, e.accessionNumber, e.filingDate, g.gvkey, l.permno</span></span>
+<span id="cb18-454"><a href="#cb18-454" aria-hidden="true" tabindex="-1"></a><span class="st">  FROM edgar_10k e</span></span>
+<span id="cb18-455"><a href="#cb18-455" aria-hidden="true" tabindex="-1"></a><span class="st">  JOIN cik_gvkey g USING (cik)</span></span>
+<span id="cb18-456"><a href="#cb18-456" aria-hidden="true" tabindex="-1"></a><span class="st">  JOIN ccm_link  l</span></span>
+<span id="cb18-457"><a href="#cb18-457" aria-hidden="true" tabindex="-1"></a><span class="st">    ON l.gvkey = g.gvkey</span></span>
+<span id="cb18-458"><a href="#cb18-458" aria-hidden="true" tabindex="-1"></a><span class="st">   AND e.filingDate BETWEEN l.linkdt AND l.linkenddt</span></span>
+<span id="cb18-459"><a href="#cb18-459" aria-hidden="true" tabindex="-1"></a><span class="st">  WHERE e.form = &#39;10-K&#39;</span></span>
+<span id="cb18-460"><a href="#cb18-460" aria-hidden="true" tabindex="-1"></a><span class="st">    AND e.cik IS NOT NULL</span></span>
+<span id="cb18-461"><a href="#cb18-461" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;&quot;&quot;</span>)</span>
+<span id="cb18-462"><a href="#cb18-462" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-463"><a href="#cb18-463" aria-hidden="true" tabindex="-1"></a>con.execute(<span class="st">&quot;SELECT * FROM linked_sample LIMIT 5&quot;</span>).fetchdf()</span>
+<span id="cb18-464"><a href="#cb18-464" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-465"><a href="#cb18-465" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-466"><a href="#cb18-466" aria-hidden="true" tabindex="-1"></a>Report how many filings made it through. Filings that drop out (no current CIK match, foreign issuers, timing gaps) are worth reporting.</span>
+<span id="cb18-467"><a href="#cb18-467" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-470"><a href="#cb18-470" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb18-471"><a href="#cb18-471" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: match-rate</span></span>
+<span id="cb18-472"><a href="#cb18-472" aria-hidden="true" tabindex="-1"></a>counts <span class="op">=</span> con.execute(<span class="st">&quot;&quot;&quot;</span></span>
+<span id="cb18-473"><a href="#cb18-473" aria-hidden="true" tabindex="-1"></a><span class="st">  SELECT</span></span>
+<span id="cb18-474"><a href="#cb18-474" aria-hidden="true" tabindex="-1"></a><span class="st">    (SELECT COUNT(*) FROM edgar_10k</span></span>
+<span id="cb18-475"><a href="#cb18-475" aria-hidden="true" tabindex="-1"></a><span class="st">       WHERE form = &#39;10-K&#39; AND cik IS NOT NULL)         AS n_filings,</span></span>
+<span id="cb18-476"><a href="#cb18-476" aria-hidden="true" tabindex="-1"></a><span class="st">    (SELECT COUNT(*) FROM linked_sample)                AS n_with_permno</span></span>
+<span id="cb18-477"><a href="#cb18-477" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;&quot;&quot;</span>).fetchdf()</span>
+<span id="cb18-478"><a href="#cb18-478" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-479"><a href="#cb18-479" aria-hidden="true" tabindex="-1"></a>counts.assign(</span>
+<span id="cb18-480"><a href="#cb18-480" aria-hidden="true" tabindex="-1"></a>    pct_linked<span class="op">=</span>(<span class="dv">100</span> <span class="op">*</span> counts[<span class="st">&quot;n_with_permno&quot;</span>] <span class="op">/</span> counts[<span class="st">&quot;n_filings&quot;</span>]).<span class="bu">round</span>(<span class="dv">1</span>)</span>
+<span id="cb18-481"><a href="#cb18-481" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb18-482"><a href="#cb18-482" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-483"><a href="#cb18-483" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-484"><a href="#cb18-484" aria-hidden="true" tabindex="-1"></a><span class="fu">## Reference</span></span>
+<span id="cb18-485"><a href="#cb18-485" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-486"><a href="#cb18-486" aria-hidden="true" tabindex="-1"></a>The Compustat and CRSP material, and the CRSP–Compustat (CCM) link used here, follow Ian D.</span>
+<span id="cb18-487"><a href="#cb18-487" aria-hidden="true" tabindex="-1"></a>Gow and Tongqing Ding, very helpful textbook <span class="co">[</span><span class="ot">**Empirical Research in Accounting: Tools and Methods**</span><span class="co">](https://iangow.github.io/far_book/)</span>{target=&quot;_blank&quot;}</span>
 </code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->

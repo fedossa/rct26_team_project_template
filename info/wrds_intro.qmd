@@ -407,6 +407,7 @@ filing date to fall inside the CCM link window.
 
 ```{mermaid}
 %%| label: link-diagram
+%%| echo: false
 flowchart LR
     E["10-K filings<br/>(CIK)<br/><i>text / metadata</i>"]
     C["Compustat<br/>(GVKEY)<br/><i>financials</i>"]
